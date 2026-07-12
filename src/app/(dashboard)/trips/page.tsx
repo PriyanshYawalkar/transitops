@@ -203,7 +203,7 @@ export default function TripsPage() {
 
                   <div className="flex items-center justify-between">
                     <Button
-                      variant={trip.status === "Dispatched" ? "default" : trip.status === "Draft" ? "secondary" : "destructive"}
+                      variant={trip.status === "Dispatched" ? "default" : trip.status === "Draft" ? "outline" : "destructive"}
                       className={`
                         w-32 rounded-lg 
                         ${trip.status === 'Dispatched' ? 'bg-blue-600 hover:bg-blue-700 text-white' : ''}
