@@ -22,7 +22,7 @@ export default function DriversPage() {
       <div className="flex items-center justify-between bg-card p-4 rounded-md border border-border shadow-sm">
         <div className="flex items-center gap-4">
           <div className="text-sm text-muted-foreground font-medium border-r border-border pr-4">
-            Filter: 
+            Filter:
             <select className="ml-2 border border-input rounded text-foreground bg-muted px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary">
               <option>Status: All</option>
             </select>
@@ -64,8 +64,8 @@ export default function DriversPage() {
                       <div className="flex items-center">
                         <span className="mr-2 text-xs font-semibold">{driver.score}</span>
                         <div className="w-12 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                          <div 
-                            className={`h-full ${driver.score >= 90 ? 'bg-green-500' : driver.score >= 80 ? 'bg-yellow-500' : 'bg-red-500'}`} 
+                          <div
+                            className={`h-full ${driver.score >= 90 ? 'bg-green-500' : driver.score >= 80 ? 'bg-yellow-500' : 'bg-red-500'}`}
                             style={{ width: `${driver.score}%` }}
                           />
                         </div>
@@ -73,9 +73,9 @@ export default function DriversPage() {
                     </td>
                     <td className="px-6 py-4">
                       <Badge variant={
-                        driver.status === "Available" ? "success" : 
-                        driver.status === "On Trip" ? "info" : 
-                        driver.status === "Off Duty" ? "secondary" : "destructive"
+                        driver.status === "Available" ? "success" :
+                          driver.status === "On Trip" ? "info" :
+                            driver.status === "Off Duty" ? "secondary" : "destructive"
                       } className="rounded-sm shadow-none uppercase tracking-wide text-[10px] px-2 py-0.5 font-bold">
                         {driver.status}
                       </Badge>

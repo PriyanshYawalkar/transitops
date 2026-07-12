@@ -22,7 +22,7 @@ export default function ExpensesPage() {
 
   return (
     <div className="space-y-6">
-      
+
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="lg:w-1/2 space-y-4">
           <div className="flex items-center justify-between">
@@ -96,7 +96,7 @@ export default function ExpensesPage() {
           </Card>
         </div>
       </div>
-      
+
       <div className="flex justify-end p-4">
         <div className="text-right">
           <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Total Operational Cost (Auto) = Fuel + Maint</p>

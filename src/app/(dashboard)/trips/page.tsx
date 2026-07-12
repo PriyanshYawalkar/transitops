@@ -54,7 +54,7 @@ export default function TripsPage() {
   const [cargoWeight, setCargoWeight] = useState("");
   const [selectedVehicleId, setSelectedVehicleId] = useState("");
   const [showCompletionModal, setShowCompletionModal] = useState(false);
-  
+
   const selectedVehicle = mockVehicles.find(v => v.id === selectedVehicleId);
   const capacityExceeded = selectedVehicle && Number(cargoWeight) > selectedVehicle.capacity;
 
@@ -71,23 +71,23 @@ export default function TripsPage() {
       <div className="flex flex-col lg:flex-row gap-8 h-full">
         {/* LEFT PANE: Create Trip */}
         <div className="lg:w-1/3 flex flex-col space-y-8">
-          
+
           {/* Trip Lifecycle Stepper */}
           <div className="space-y-2">
             <h2 className="text-xs font-semibold text-muted-foreground tracking-wider uppercase mb-4">Trip Lifecycle</h2>
             <div className="flex items-center justify-between relative px-2">
               <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-border -z-10 rounded-full"></div>
-              
+
               <div className="flex flex-col items-center gap-1 z-10 bg-background px-1">
                 <div className="w-5 h-5 rounded-full bg-green-500 ring-4 ring-background"></div>
                 <span className="text-xs font-medium text-green-600">Draft</span>
               </div>
-              
+
               <div className="flex flex-col items-center gap-1 z-10 bg-background px-1">
                 <div className="w-5 h-5 rounded-full bg-blue-500 ring-4 ring-background"></div>
                 <span className="text-xs font-medium text-blue-600">Dispatched</span>
               </div>
-              
+
               <div className="flex flex-col items-center gap-1 z-10 bg-background px-1">
                 <div className="w-5 h-5 rounded-full bg-muted ring-4 ring-background"></div>
                 <span className="text-xs font-medium text-muted-foreground">Completed</span>
@@ -103,29 +103,29 @@ export default function TripsPage() {
           {/* Create Form */}
           <div className="flex-1 space-y-4">
             <h2 className="text-sm font-semibold tracking-wider uppercase">Create TR:</h2>
-            
+
             <div className="space-y-3">
               <div className="space-y-1.5">
                 <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Source</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Gandhinagar Depot" 
+                  placeholder="Gandhinagar Depot"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Destination</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Ahmedabad Hub" 
+                  placeholder="Ahmedabad Hub"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Vehicle (Available Only)</label>
-                <select 
+                <select
                   className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   value={selectedVehicleId}
                   onChange={(e) => setSelectedVehicleId(e.target.value)}
@@ -149,8 +149,8 @@ export default function TripsPage() {
 
               <div className="space-y-1.5">
                 <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Cargo Weight (KG)</label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   placeholder="700"
                   value={cargoWeight}
@@ -160,10 +160,10 @@ export default function TripsPage() {
 
               <div className="space-y-1.5">
                 <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Planned Distance (KM)</label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  placeholder="38" 
+                  placeholder="38"
                 />
               </div>
             </div>
@@ -185,7 +185,7 @@ export default function TripsPage() {
         {/* RIGHT PANE: Live Board */}
         <div className="lg:w-2/3 space-y-4 border-l pl-8 pb-10">
           <h2 className="text-sm font-semibold tracking-wider uppercase mb-6">Live Board</h2>
-          
+
           <div className="space-y-4">
             {mockTrips.map((trip) => (
               <Card key={trip.id} className="relative overflow-hidden border-dashed bg-card">
@@ -196,13 +196,13 @@ export default function TripsPage() {
                       {trip.vehicle} {trip.driver && `/ ${trip.driver}`}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center text-md mb-6 text-foreground">
                     {trip.source} <Navigation className="mx-2 h-4 w-4 text-muted-foreground rotate-90" /> {trip.destination}
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <Button 
+                    <Button
                       variant={trip.status === "Dispatched" ? "default" : trip.status === "Draft" ? "secondary" : "destructive"}
                       className={`
                         w-32 rounded-lg 
@@ -229,8 +229,8 @@ export default function TripsPage() {
         </div>
       </div>
 
-      <Modal 
-        isOpen={showCompletionModal} 
+      <Modal
+        isOpen={showCompletionModal}
         onClose={() => setShowCompletionModal(false)}
         title="Complete Trip"
       >

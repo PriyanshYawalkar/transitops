@@ -19,11 +19,11 @@ export default function VehiclesPage() {
 
   return (
     <div className="space-y-6">
-      
+
       <div className="flex items-center justify-between bg-card p-4 rounded-md border border-border shadow-sm">
         <div className="flex items-center gap-4">
           <div className="text-sm text-muted-foreground font-medium border-r border-border pr-4">
-            Filter: 
+            Filter:
             <select className="ml-2 border border-input rounded text-foreground bg-muted px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary">
               <option>Vehicle Type: All</option>
             </select>
@@ -64,9 +64,9 @@ export default function VehiclesPage() {
                   <td className="px-6 py-4">--</td>
                   <td className="px-6 py-4">
                     <Badge variant={
-                      vehicle.status === "Available" ? "success" : 
-                      vehicle.status === "On Trip" ? "info" : 
-                      vehicle.status === "In Shop" ? "warning" : "secondary"
+                      vehicle.status === "Available" ? "success" :
+                        vehicle.status === "On Trip" ? "info" :
+                          vehicle.status === "In Shop" ? "warning" : "secondary"
                     } className="rounded-sm shadow-none uppercase tracking-wide text-[10px] px-2 py-0.5 font-bold">
                       {vehicle.status}
                     </Badge>
