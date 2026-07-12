@@ -1,4 +1,5 @@
 from flask import Flask
+from flasgger import Swagger
 
 from config import Config
 from extensions import cors, db, jwt
@@ -21,6 +22,7 @@ def create_app():
     db.init_app(app)
     jwt.init_app(app)
     cors.init_app(app)
+    swagger = Swagger(app, template_file='swagger.yml')
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(vehicle_bp)

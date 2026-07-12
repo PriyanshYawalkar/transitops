@@ -2,178 +2,252 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { Card, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
-import { Plus, MapPin, Navigation } from "lucide-react";
+import { Navigation, AlertCircle } from "lucide-react";
+
+// Updated mock data reflecting the mockup
+const mockVehicles = [
+  { id: "V1", name: "VAN-05 - 500 kg capacity", capacity: 500, driver: "Alex" },
+  { id: "V2", name: "TRUCK-04 - 2000 kg capacity", capacity: 2000, driver: "Suresh" },
+  { id: "V3", name: "TRUCK-01 - 5000 kg capacity", capacity: 5000, driver: "Rahul" },
+];
+
+const mockDrivers = [
+  { id: "D1", name: "Alex" },
+  { id: "D2", name: "Suresh" },
+  { id: "D3", name: "Rahul" },
+];
 
 const mockTrips = [
-  { id: "TR-1004", source: "Warehouse A (Mumbai)", dest: "Distribution Center (Pune)", vehicle: "Van-05", driver: "Rahul Sharma", status: "Draft", distance: "150 km" },
-  { id: "TR-1003", source: "Port Terminal (JNPT)", dest: "Warehouse B (Thane)", vehicle: "Truck-01", driver: "Priya Patel", status: "Dispatched", distance: "45 km" },
-  { id: "TR-1002", source: "Distribution Center (Pune)", dest: "Retail Store (Nashik)", vehicle: "Van-02", driver: "Sneha Desai", status: "Completed", distance: "210 km" },
+  {
+    id: "TR001",
+    vehicle: "VAN-05",
+    driver: "ALEX",
+    source: "Gandhinagar Depot",
+    destination: "Ahmedabad Hub",
+    status: "Dispatched",
+    timeInfo: "45 min",
+  },
+  {
+    id: "TR004",
+    vehicle: "TRUCK-04",
+    driver: "SURESH",
+    source: "Vatva Industrial Area",
+    destination: "Sanand Warehouse",
+    status: "Draft",
+    timeInfo: "Awaiting driver",
+  },
+  {
+    id: "TR006",
+    vehicle: "Unassigned",
+    driver: "",
+    source: "Mansa",
+    destination: "Kalol Depot",
+    status: "Cancelled",
+    timeInfo: "Vehicle went to maint...",
+  },
 ];
 
 export default function TripsPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [cargoWeight, setCargoWeight] = useState("");
+  const [selectedVehicleId, setSelectedVehicleId] = useState("");
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  
+  const selectedVehicle = mockVehicles.find(v => v.id === selectedVehicleId);
+  const capacityExceeded = selectedVehicle && Number(cargoWeight) > selectedVehicle.capacity;
+
+  const handleTripComplete = () => {
+    setShowCompletionModal(true);
+  };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 h-[calc(100vh-8rem)]">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Trip Management</h1>
-          <p className="text-muted-foreground">Dispatch vehicles, track routes, and monitor active trips.</p>
+          <h1 className="text-2xl font-bold tracking-tight">Trip Dispatcher</h1>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Create Trip
-        </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        {/* Kanban-style Columns */}
-        
-        {/* Draft */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between px-1">
-            <h3 className="font-medium text-sm text-muted-foreground">Draft</h3>
-            <Badge variant="secondary">1</Badge>
-          </div>
-          {mockTrips.filter(t => t.status === "Draft").map(trip => (
-            <Card key={trip.id} className="cursor-pointer hover:border-primary/50 transition-colors">
-              <CardContent className="p-4 space-y-3">
-                <div className="flex justify-between items-start">
-                  <span className="font-semibold">{trip.id}</span>
-                  <Badge variant="secondary">{trip.status}</Badge>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex items-center text-muted-foreground">
-                    <MapPin className="mr-2 h-3 w-3" /> {trip.source}
-                  </div>
-                  <div className="flex items-center text-muted-foreground">
-                    <Navigation className="mr-2 h-3 w-3" /> {trip.dest}
-                  </div>
-                </div>
-                <div className="pt-2 border-t flex justify-between text-xs text-muted-foreground">
-                  <span>{trip.vehicle}</span>
-                  <span>{trip.driver}</span>
-                </div>
-                <Button className="w-full mt-2" size="sm">Dispatch</Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Dispatched / On Trip */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between px-1">
-            <h3 className="font-medium text-sm text-muted-foreground">Dispatched</h3>
-            <Badge variant="secondary">1</Badge>
-          </div>
-          {mockTrips.filter(t => t.status === "Dispatched").map(trip => (
-            <Card key={trip.id} className="cursor-pointer hover:border-primary/50 transition-colors border-l-4 border-l-primary">
-              <CardContent className="p-4 space-y-3">
-                <div className="flex justify-between items-start">
-                  <span className="font-semibold">{trip.id}</span>
-                  <Badge variant="default">{trip.status}</Badge>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex items-center text-muted-foreground">
-                    <MapPin className="mr-2 h-3 w-3" /> {trip.source}
-                  </div>
-                  <div className="flex items-center text-muted-foreground">
-                    <Navigation className="mr-2 h-3 w-3" /> {trip.dest}
-                  </div>
-                </div>
-                <div className="pt-2 border-t flex justify-between text-xs text-muted-foreground">
-                  <span>{trip.vehicle}</span>
-                  <span>{trip.driver}</span>
-                </div>
-                <Button variant="outline" className="w-full mt-2" size="sm">Complete Trip</Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Completed */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between px-1">
-            <h3 className="font-medium text-sm text-muted-foreground">Completed</h3>
-            <Badge variant="secondary">1</Badge>
-          </div>
-          {mockTrips.filter(t => t.status === "Completed").map(trip => (
-            <Card key={trip.id} className="opacity-75">
-              <CardContent className="p-4 space-y-3">
-                <div className="flex justify-between items-start">
-                  <span className="font-semibold line-through text-muted-foreground">{trip.id}</span>
-                  <Badge variant="success">{trip.status}</Badge>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex items-center text-muted-foreground">
-                    <MapPin className="mr-2 h-3 w-3" /> {trip.source}
-                  </div>
-                  <div className="flex items-center text-muted-foreground">
-                    <Navigation className="mr-2 h-3 w-3" /> {trip.dest}
-                  </div>
-                </div>
-                <div className="pt-2 border-t flex justify-between text-xs text-muted-foreground">
-                  <span>{trip.vehicle}</span>
-                  <span>{trip.driver}</span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-      </div>
-
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Create New Trip">
-        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setIsModalOpen(false); }}>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium leading-none">Source Location</label>
-              <input required className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="e.g. Warehouse A" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium leading-none">Destination</label>
-              <input required className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="e.g. Distribution Center" />
-            </div>
-          </div>
+      <div className="flex flex-col lg:flex-row gap-8 h-full">
+        {/* LEFT PANE: Create Trip */}
+        <div className="lg:w-1/3 flex flex-col space-y-8">
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium leading-none">Assign Vehicle</label>
-              <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                <option value="">Select Available Vehicle</option>
-                <option value="v1">Van-05 (500kg cap)</option>
-                <option value="v4">Pickup-03 (1200kg cap)</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium leading-none">Assign Driver</label>
-              <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                <option value="">Select Available Driver</option>
-                <option value="d1">Rahul Sharma</option>
-                <option value="d4">Sneha Desai</option>
-              </select>
+          {/* Trip Lifecycle Stepper */}
+          <div className="space-y-2">
+            <h2 className="text-xs font-semibold text-muted-foreground tracking-wider uppercase mb-4">Trip Lifecycle</h2>
+            <div className="flex items-center justify-between relative px-2">
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-200 -z-10 rounded-full"></div>
+              
+              <div className="flex flex-col items-center gap-1 z-10 bg-background px-1">
+                <div className="w-5 h-5 rounded-full bg-green-500 ring-4 ring-background"></div>
+                <span className="text-xs font-medium text-green-600">Draft</span>
+              </div>
+              
+              <div className="flex flex-col items-center gap-1 z-10 bg-background px-1">
+                <div className="w-5 h-5 rounded-full bg-blue-500 ring-4 ring-background"></div>
+                <span className="text-xs font-medium text-blue-600">Dispatched</span>
+              </div>
+              
+              <div className="flex flex-col items-center gap-1 z-10 bg-background px-1">
+                <div className="w-5 h-5 rounded-full bg-slate-300 ring-4 ring-background"></div>
+                <span className="text-xs font-medium text-slate-400">Completed</span>
+              </div>
+
+              <div className="flex flex-col items-center gap-1 z-10 bg-background px-1">
+                <div className="w-5 h-5 rounded-full bg-slate-300 ring-4 ring-background"></div>
+                <span className="text-xs font-medium text-slate-400">Cancelled</span>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium leading-none">Cargo Weight (kg)</label>
-              <input required type="number" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="450" />
-              <p className="text-[10px] text-muted-foreground">Must be &le; Vehicle Capacity</p>
+          {/* Create Form */}
+          <div className="flex-1 space-y-4">
+            <h2 className="text-sm font-semibold tracking-wider uppercase">Create TR:</h2>
+            
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Source</label>
+                <input 
+                  type="text" 
+                  className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  placeholder="Gandhinagar Depot" 
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Destination</label>
+                <input 
+                  type="text" 
+                  className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  placeholder="Ahmedabad Hub" 
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Vehicle (Available Only)</label>
+                <select 
+                  className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  value={selectedVehicleId}
+                  onChange={(e) => setSelectedVehicleId(e.target.value)}
+                >
+                  <option value="">Select Vehicle</option>
+                  {mockVehicles.map(v => (
+                    <option key={v.id} value={v.id}>{v.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Driver (Available Only)</label>
+                <select className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  <option value="">Select Driver</option>
+                  {mockDrivers.map(d => (
+                    <option key={d.id} value={d.id}>{d.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Cargo Weight (KG)</label>
+                <input 
+                  type="number" 
+                  className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  placeholder="700"
+                  value={cargoWeight}
+                  onChange={(e) => setCargoWeight(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Planned Distance (KM)</label>
+                <input 
+                  type="number" 
+                  className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  placeholder="38" 
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium leading-none">Planned Distance (km)</label>
-              <input required type="number" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="150" />
-            </div>
+
+            {/* Validation Warning */}
+            {capacityExceeded && (
+              <div className="mt-4 p-3 border border-red-200 bg-red-50 text-red-600 rounded-md flex items-center gap-2 text-sm">
+                <AlertCircle className="h-4 w-4" />
+                Vehicle Capacity: {selectedVehicle.capacity} kg. Cargo weight exceeds limit!
+              </div>
+            )}
+
+            <Button className="w-full mt-6" disabled={capacityExceeded || !cargoWeight || !selectedVehicleId}>
+              Create Trip
+            </Button>
+          </div>
+        </div>
+
+        {/* RIGHT PANE: Live Board */}
+        <div className="lg:w-2/3 space-y-4 border-l pl-8 pb-10">
+          <h2 className="text-sm font-semibold tracking-wider uppercase mb-6">Live Board</h2>
+          
+          <div className="space-y-4">
+            {mockTrips.map((trip) => (
+              <Card key={trip.id} className="relative overflow-hidden border-dashed">
+                <CardContent className="p-5">
+                  <div className="flex justify-between items-start mb-3">
+                    <span className="text-lg font-mono font-semibold">{trip.id}</span>
+                    <span className="text-sm font-medium text-muted-foreground">
+                      {trip.vehicle} {trip.driver && `/ ${trip.driver}`}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center text-md mb-6">
+                    {trip.source} <Navigation className="mx-2 h-4 w-4 text-muted-foreground rotate-90" /> {trip.destination}
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <Button 
+                      variant={trip.status === "Dispatched" ? "default" : trip.status === "Draft" ? "secondary" : "destructive"}
+                      className={`
+                        w-32 rounded-lg 
+                        ${trip.status === 'Dispatched' ? 'bg-blue-600 hover:bg-blue-700 text-white' : ''}
+                        ${trip.status === 'Draft' ? 'bg-slate-500 hover:bg-slate-600 text-white' : ''}
+                        ${trip.status === 'Cancelled' ? 'bg-red-600 hover:bg-red-700 text-white' : ''}
+                      `}
+                      onClick={trip.status === "Dispatched" ? handleTripComplete : undefined}
+                    >
+                      {trip.status}
+                    </Button>
+                    <span className="text-sm text-muted-foreground italic">
+                      {trip.timeInfo}
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
 
-          <div className="pt-4 flex justify-end space-x-2">
-            <Button variant="outline" type="button" onClick={() => setIsModalOpen(false)}>Cancel</Button>
-            <Button type="submit">Create Draft Trip</Button>
+          <p className="text-xs text-muted-foreground mt-8 italic">
+            On Complete: odometer → fuel log → expenses → Vehicle & Driver Available
+          </p>
+        </div>
+      </div>
+
+      <Modal 
+        isOpen={showCompletionModal} 
+        onClose={() => setShowCompletionModal(false)}
+        title="Complete Trip"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">Log the final odometer reading and any incurred fuel/expenses before completing the trip.</p>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium">Final Odometer</label>
+            <input type="number" className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background" />
           </div>
-        </form>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium">Fuel Added (Liters)</label>
+            <input type="number" className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background" />
+          </div>
+          <Button className="w-full mt-4" onClick={() => setShowCompletionModal(false)}>Mark as Completed</Button>
+        </div>
       </Modal>
     </div>
   );
