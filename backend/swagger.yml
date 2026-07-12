@@ -1,0 +1,739 @@
+swagger: '2.0'
+info:
+  title: TransitOps API
+  description: API for the TransitOps Smart Transport Operations Platform.
+  version: 1.0.0
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\""
+security:
+  - Bearer: []
+paths:
+  /api/auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register a new user
+      security: []
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - email
+              - password
+            properties:
+              name:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
+              role:
+                type: string
+                enum: [admin, manager, driver]
+      responses:
+        201:
+          description: User registered successfully
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      security: []
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      responses:
+        200:
+          description: Login successful
+  /api/auth/me:
+    get:
+      tags:
+        - Auth
+      summary: Get current authenticated user
+      responses:
+        200:
+          description: Current user details
+
+  /api/vehicles:
+    get:
+      tags:
+        - Vehicles
+      summary: List all vehicles
+      parameters:
+        - in: query
+          name: status
+          type: string
+        - in: query
+          name: type
+          type: string
+      responses:
+        200:
+          description: List of vehicles
+    post:
+      tags:
+        - Vehicles
+      summary: Create a new vehicle
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - license_plate
+              - type
+            properties:
+              license_plate:
+                type: string
+              make:
+                type: string
+              model:
+                type: string
+              year:
+                type: integer
+              type:
+                type: string
+              capacity:
+                type: integer
+      responses:
+        201:
+          description: Vehicle created
+  /api/vehicles/{id}:
+    get:
+      tags:
+        - Vehicles
+      summary: Get a vehicle by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Vehicle details
+    put:
+      tags:
+        - Vehicles
+      summary: Update a vehicle
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              license_plate:
+                type: string
+              make:
+                type: string
+              model:
+                type: string
+              year:
+                type: integer
+              type:
+                type: string
+              capacity:
+                type: integer
+              status:
+                type: string
+      responses:
+        200:
+          description: Vehicle updated
+    delete:
+      tags:
+        - Vehicles
+      summary: Delete a vehicle
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Vehicle deleted
+
+  /api/drivers:
+    get:
+      tags:
+        - Drivers
+      summary: List all drivers
+      parameters:
+        - in: query
+          name: status
+          type: string
+      responses:
+        200:
+          description: List of drivers
+    post:
+      tags:
+        - Drivers
+      summary: Create a new driver
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - name
+              - license_number
+            properties:
+              name:
+                type: string
+              license_number:
+                type: string
+              phone:
+                type: string
+      responses:
+        201:
+          description: Driver created
+  /api/drivers/{id}:
+    get:
+      tags:
+        - Drivers
+      summary: Get a driver by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Driver details
+    put:
+      tags:
+        - Drivers
+      summary: Update a driver
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              license_number:
+                type: string
+              phone:
+                type: string
+              status:
+                type: string
+      responses:
+        200:
+          description: Driver updated
+    delete:
+      tags:
+        - Drivers
+      summary: Delete a driver
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Driver deleted
+
+  /api/trips:
+    get:
+      tags:
+        - Trips
+      summary: List all trips
+      parameters:
+        - in: query
+          name: status
+          type: string
+        - in: query
+          name: vehicle_id
+          type: integer
+        - in: query
+          name: driver_id
+          type: integer
+      responses:
+        200:
+          description: List of trips
+    post:
+      tags:
+        - Trips
+      summary: Create a new trip
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - vehicle_id
+              - driver_id
+              - origin
+              - destination
+            properties:
+              vehicle_id:
+                type: integer
+              driver_id:
+                type: integer
+              origin:
+                type: string
+              destination:
+                type: string
+              scheduled_start:
+                type: string
+                format: date-time
+      responses:
+        201:
+          description: Trip created
+  /api/trips/{id}:
+    get:
+      tags:
+        - Trips
+      summary: Get a trip by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Trip details
+    put:
+      tags:
+        - Trips
+      summary: Update a trip
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              origin:
+                type: string
+              destination:
+                type: string
+              scheduled_start:
+                type: string
+                format: date-time
+      responses:
+        200:
+          description: Trip updated
+    delete:
+      tags:
+        - Trips
+      summary: Delete a trip
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Trip deleted
+  /api/trips/{id}/start:
+    post:
+      tags:
+        - Trips
+      summary: Start a trip
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Trip started
+  /api/trips/{id}/complete:
+    post:
+      tags:
+        - Trips
+      summary: Complete a trip
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: false
+          schema:
+            type: object
+            properties:
+              distance_km:
+                type: number
+      responses:
+        200:
+          description: Trip completed
+  /api/trips/{id}/cancel:
+    post:
+      tags:
+        - Trips
+      summary: Cancel a trip
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Trip cancelled
+
+  /api/maintenance:
+    get:
+      tags:
+        - Maintenance
+      summary: List maintenance records
+      responses:
+        200:
+          description: Maintenance records
+    post:
+      tags:
+        - Maintenance
+      summary: Create a maintenance record
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - vehicle_id
+              - type
+              - description
+            properties:
+              vehicle_id:
+                type: integer
+              type:
+                type: string
+              description:
+                type: string
+              cost:
+                type: number
+              scheduled_date:
+                type: string
+                format: date-time
+      responses:
+        201:
+          description: Maintenance record created
+  /api/maintenance/{id}:
+    get:
+      tags:
+        - Maintenance
+      summary: Get maintenance record by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Maintenance record details
+    put:
+      tags:
+        - Maintenance
+      summary: Update maintenance record
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              type:
+                type: string
+              description:
+                type: string
+              cost:
+                type: number
+              scheduled_date:
+                type: string
+                format: date-time
+      responses:
+        200:
+          description: Maintenance record updated
+    delete:
+      tags:
+        - Maintenance
+      summary: Delete maintenance record
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Maintenance record deleted
+  /api/maintenance/{id}/complete:
+    post:
+      tags:
+        - Maintenance
+      summary: Mark maintenance as complete
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Maintenance completed
+
+  /api/fuel:
+    get:
+      tags:
+        - Fuel
+      summary: List fuel logs
+      responses:
+        200:
+          description: Fuel logs
+    post:
+      tags:
+        - Fuel
+      summary: Create a fuel log
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - vehicle_id
+              - liters
+              - cost
+            properties:
+              vehicle_id:
+                type: integer
+              liters:
+                type: number
+              cost:
+                type: number
+              odometer_reading:
+                type: integer
+              notes:
+                type: string
+      responses:
+        201:
+          description: Fuel log created
+  /api/fuel/{id}:
+    get:
+      tags:
+        - Fuel
+      summary: Get fuel log by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Fuel log details
+    put:
+      tags:
+        - Fuel
+      summary: Update fuel log
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              liters:
+                type: number
+              cost:
+                type: number
+              odometer_reading:
+                type: integer
+              notes:
+                type: string
+      responses:
+        200:
+          description: Fuel log updated
+    delete:
+      tags:
+        - Fuel
+      summary: Delete fuel log
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Fuel log deleted
+  /api/fuel/vehicle/{vehicle_id}/stats:
+    get:
+      tags:
+        - Fuel
+      summary: Get fuel stats for a vehicle
+      parameters:
+        - in: path
+          name: vehicle_id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Fuel stats
+
+  /api/expenses:
+    get:
+      tags:
+        - Expenses
+      summary: List expenses
+      parameters:
+        - in: query
+          name: category
+          type: string
+        - in: query
+          name: vehicle_id
+          type: integer
+      responses:
+        200:
+          description: Expenses
+    post:
+      tags:
+        - Expenses
+      summary: Create an expense
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - amount
+              - category
+              - description
+            properties:
+              amount:
+                type: number
+              category:
+                type: string
+              description:
+                type: string
+              vehicle_id:
+                type: integer
+      responses:
+        201:
+          description: Expense created
+  /api/expenses/{id}:
+    get:
+      tags:
+        - Expenses
+      summary: Get expense by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Expense details
+    put:
+      tags:
+        - Expenses
+      summary: Update expense
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            properties:
+              amount:
+                type: number
+              category:
+                type: string
+              description:
+                type: string
+              vehicle_id:
+                type: integer
+      responses:
+        200:
+          description: Expense updated
+    delete:
+      tags:
+        - Expenses
+      summary: Delete expense
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+      responses:
+        200:
+          description: Expense deleted
+
+  /api/dashboard/summary:
+    get:
+      tags:
+        - Dashboard
+      summary: Get system summary metrics
+      responses:
+        200:
+          description: Summary metrics
+  /api/dashboard/vehicle-status:
+    get:
+      tags:
+        - Dashboard
+      summary: Get vehicle counts grouped by status
+      responses:
+        200:
+          description: Vehicle status counts
+  /api/dashboard/recent-trips:
+    get:
+      tags:
+        - Dashboard
+      summary: Get last 10 trips
+      responses:
+        200:
+          description: Recent trips
+  /api/dashboard/expense-breakdown:
+    get:
+      tags:
+        - Dashboard
+      summary: Get expenses grouped by category
+      responses:
+        200:
+          description: Expense breakdown
