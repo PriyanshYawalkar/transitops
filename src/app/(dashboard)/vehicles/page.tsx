@@ -72,7 +72,8 @@ export default function VehiclesPage() {
         body: JSON.stringify({
           ...formData,
           maximum_load_capacity: Number(formData.maximum_load_capacity),
-          acquisition_cost: Number(formData.acquisition_cost)
+          acquisition_cost: Number(formData.acquisition_cost),
+          odometer: 0
         })
       });
       setIsModalOpen(false);
