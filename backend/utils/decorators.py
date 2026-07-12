@@ -2,6 +2,7 @@ from functools import wraps
 
 from flask_jwt_extended import get_jwt, verify_jwt_in_request
 
+from models import DISPATCHER, FINANCIAL_ANALYST, FLEET_MANAGER, SAFETY_OFFICER
 from utils.helpers import error_response
 
 
@@ -20,4 +21,7 @@ def role_required(*allowed_roles):
     return decorator
 
 
-admin_required = role_required("admin")
+fleet_manager_required = role_required(FLEET_MANAGER)
+dispatcher_required = role_required(DISPATCHER)
+safety_officer_required = role_required(SAFETY_OFFICER)
+financial_analyst_required = role_required(FINANCIAL_ANALYST)

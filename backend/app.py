@@ -35,6 +35,10 @@ def create_app():
     def health_check():
         return {"status": "ok"}
 
+    @app.route("/health", methods=["GET"])
+    def health():
+        return {"status": "ok", "message": "TransitOps Backend Running"}
+
     @jwt.unauthorized_loader
     def handle_unauthorized(reason):
         return error_response(f"Authorization required: {reason}", 401)

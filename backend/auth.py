@@ -2,41 +2,43 @@ from flask import Blueprint, request
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
 from extensions import db
-from models import User
+from models import ROLES, User
 from utils.helpers import error_response, success_response
 from utils.validators import is_valid_email, validate_required_fields
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/auth")
-
-ALLOWED_ROLES = {"admin", "manager", "driver"}
 
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json(silent=True) or {}
 
-    errors = validate_required_fields(data, ["name", "email", "password"])
+    errors = validate_required_fields(data, ["name", "username", "email", "password", "role"])
     if errors:
-        return error_response(errors[0], 400)
+        return error_response("; ".join(errors), 400)
 
     name = data["name"].strip()
+    username = data["username"].strip().lower()
     email = data["email"].strip().lower()
     password = data["password"]
-    role = data.get("role", "admin")
+    role = data["role"].strip().lower()
 
     if not is_valid_email(email):
         return error_response("Invalid email format", 400)
 
-    if len(password) < 6:
-        return error_response("Password must be at least 6 characters long", 400)
+    if len(password) < 8:
+        return error_response("Password must be at least 8 characters long", 400)
 
-    if role not in ALLOWED_ROLES:
-        return error_response(f"Role must be one of {sorted(ALLOWED_ROLES)}", 400)
+    if role not in ROLES:
+        return error_response(f"Role must be one of {sorted(ROLES)}", 400)
+
+    if User.query.filter_by(username=username).first():
+        return error_response("This username is already taken", 409)
 
     if User.query.filter_by(email=email).first():
         return error_response("An account with this email already exists", 409)
 
-    user = User(name=name, email=email, role=role)
+    user = User(name=name, username=username, email=email, role=role)
     user.set_password(password)
 
     db.session.add(user)
@@ -51,7 +53,7 @@ def login():
 
     errors = validate_required_fields(data, ["email", "password"])
     if errors:
-        return error_response(errors[0], 400)
+        return error_response("; ".join(errors), 400)
 
     email = data["email"].strip().lower()
     password = data["password"]
