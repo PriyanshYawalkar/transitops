@@ -6,19 +6,9 @@ from utils.decorators import firebase_auth_required as jwt_required
 from extensions import db
 from models import Driver, Trip, Vehicle
 from utils.helpers import error_response, serialize_list, success_response
-from utils.validators import parse_datetime, validate_required_fields
+from utils.validators import parse_datetime, validate_non_negative, validate_required_fields
 
 trip_bp = Blueprint("trip", __name__, url_prefix="/api/trips")
-
-
-def _active_trip_conflict(vehicle_id, driver_id, exclude_trip_id=None):
-    query = Trip.query.filter(
-        Trip.status == "ongoing",
-        (Trip.vehicle_id == vehicle_id) | (Trip.driver_id == driver_id),
-    )
-    if exclude_trip_id:
-        query = query.filter(Trip.id != exclude_trip_id)
-    return query.first()
 
 
 @trip_bp.route("", methods=["POST"])
@@ -26,21 +16,37 @@ def _active_trip_conflict(vehicle_id, driver_id, exclude_trip_id=None):
 def create_trip():
     data = request.get_json(silent=True) or {}
 
-    errors = validate_required_fields(data, ["vehicle_id", "driver_id", "origin", "destination"])
+    errors = validate_required_fields(
+        data, ["vehicle_id", "driver_id", "source", "destination", "cargo_weight"]
+    )
     if errors:
-        return error_response(errors[0], 400)
+        return error_response("; ".join(errors), 400)
 
     vehicle = Vehicle.query.get(data["vehicle_id"])
     if not vehicle:
         return error_response("Vehicle not found", 404)
-    if vehicle.status != "Available":
-        return error_response(f"Vehicle is not available (current status: {vehicle.status})", 400)
 
     driver = Driver.query.get(data["driver_id"])
     if not driver:
         return error_response("Driver not found", 404)
-    if driver.status != "active":
-        return error_response(f"Driver is not active (current status: {driver.status})", 400)
+
+    cargo_weight = data["cargo_weight"]
+    cargo_error = validate_non_negative(cargo_weight, "cargo_weight")
+    if cargo_error:
+        return error_response(cargo_error, 400)
+
+    if cargo_weight > vehicle.maximum_load_capacity:
+        return error_response(
+            f"cargo_weight ({cargo_weight}) exceeds vehicle maximum_load_capacity "
+            f"({vehicle.maximum_load_capacity})",
+            400,
+        )
+
+    planned_distance = data.get("planned_distance")
+    if planned_distance is not None:
+        planned_distance_error = validate_non_negative(planned_distance, "planned_distance")
+        if planned_distance_error:
+            return error_response(planned_distance_error, 400)
 
     scheduled_start = None
     if data.get("scheduled_start"):
@@ -51,11 +57,13 @@ def create_trip():
     trip = Trip(
         vehicle_id=vehicle.id,
         driver_id=driver.id,
-        origin=data["origin"].strip(),
+        source=data["source"].strip(),
         destination=data["destination"].strip(),
+        cargo_weight=cargo_weight,
+        planned_distance=planned_distance,
         scheduled_start=scheduled_start,
         notes=data.get("notes"),
-        status="scheduled",
+        status="Draft",
     )
 
     db.session.add(trip)
@@ -101,7 +109,7 @@ def update_trip(trip_id):
     if not trip:
         return error_response("Trip not found", 404)
 
-    if trip.status in ("completed", "cancelled"):
+    if trip.status in ("Completed", "Cancelled"):
         return error_response(f"Cannot modify a {trip.status} trip", 400)
 
     data = request.get_json(silent=True) or {}
@@ -111,11 +119,32 @@ def update_trip(trip_id):
             "Trip status cannot be changed directly; use /start, /complete, or /cancel", 400
         )
 
-    if "origin" in data:
-        trip.origin = data["origin"].strip()
+    if "source" in data:
+        trip.source = data["source"].strip()
 
     if "destination" in data:
         trip.destination = data["destination"].strip()
+
+    if "cargo_weight" in data:
+        cargo_weight = data["cargo_weight"]
+        cargo_error = validate_non_negative(cargo_weight, "cargo_weight")
+        if cargo_error:
+            return error_response(cargo_error, 400)
+        if cargo_weight > trip.vehicle.maximum_load_capacity:
+            return error_response(
+                f"cargo_weight ({cargo_weight}) exceeds vehicle maximum_load_capacity "
+                f"({trip.vehicle.maximum_load_capacity})",
+                400,
+            )
+        trip.cargo_weight = cargo_weight
+
+    if "planned_distance" in data:
+        planned_distance = data["planned_distance"]
+        if planned_distance is not None:
+            planned_distance_error = validate_non_negative(planned_distance, "planned_distance")
+            if planned_distance_error:
+                return error_response(planned_distance_error, 400)
+        trip.planned_distance = planned_distance
 
     if "notes" in data:
         trip.notes = data["notes"]
@@ -149,19 +178,37 @@ def start_trip(trip_id):
     if not trip:
         return error_response("Trip not found", 404)
 
-    if trip.status != "scheduled":
-        return error_response(f"Only scheduled trips can be started (current status: {trip.status})", 400)
+    if trip.status != "Draft":
+        return error_response(
+            f"Only draft trips can be dispatched (current status: {trip.status})", 400
+        )
 
-    conflict = _active_trip_conflict(trip.vehicle_id, trip.driver_id, exclude_trip_id=trip.id)
-    if conflict:
-        return error_response("Vehicle or driver is already on an ongoing trip", 409)
+    vehicle = trip.vehicle
+    driver = trip.driver
 
-    trip.status = "ongoing"
+    if vehicle.status != "Available":
+        return error_response(
+            f"Vehicle is not available for dispatch (current status: {vehicle.status})", 409
+        )
+
+    if driver.status == "Suspended":
+        return error_response("Driver is suspended and cannot be dispatched", 409)
+
+    if driver.status != "Available":
+        return error_response(
+            f"Driver is not available for dispatch (current status: {driver.status})", 409
+        )
+
+    if driver.is_license_expired():
+        return error_response("Driver's license has expired and cannot be dispatched", 409)
+
+    trip.status = "Dispatched"
     trip.start_time = datetime.now(timezone.utc)
-    trip.vehicle.status = "On Trip"
+    vehicle.status = "On Trip"
+    driver.status = "On Trip"
     db.session.commit()
 
-    return success_response(trip.to_dict(), "Trip started")
+    return success_response(trip.to_dict(), "Trip dispatched")
 
 
 @trip_bp.route("/<int:trip_id>/complete", methods=["POST"])
@@ -171,16 +218,19 @@ def complete_trip(trip_id):
     if not trip:
         return error_response("Trip not found", 404)
 
-    if trip.status != "ongoing":
-        return error_response(f"Only ongoing trips can be completed (current status: {trip.status})", 400)
+    if trip.status != "Dispatched":
+        return error_response(
+            f"Only dispatched trips can be completed (current status: {trip.status})", 400
+        )
 
     data = request.get_json(silent=True) or {}
 
-    trip.status = "completed"
+    trip.status = "Completed"
     trip.end_time = datetime.now(timezone.utc)
     if data.get("distance_km") is not None:
         trip.distance_km = data["distance_km"]
     trip.vehicle.status = "Available"
+    trip.driver.status = "Available"
 
     db.session.commit()
     return success_response(trip.to_dict(), "Trip completed")
@@ -193,10 +243,14 @@ def cancel_trip(trip_id):
     if not trip:
         return error_response("Trip not found", 404)
 
-    if trip.status in ("completed", "cancelled"):
+    if trip.status in ("Completed", "Cancelled"):
         return error_response(f"Cannot cancel a {trip.status} trip", 400)
 
-    trip.status = "cancelled"
-    trip.vehicle.status = "Available"
+    was_dispatched = trip.status == "Dispatched"
+    trip.status = "Cancelled"
+    if was_dispatched:
+        trip.vehicle.status = "Available"
+        trip.driver.status = "Available"
+
     db.session.commit()
     return success_response(trip.to_dict(), "Trip cancelled")
