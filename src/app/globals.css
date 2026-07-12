@@ -19,45 +19,24 @@
 }
 
 :root {
-  --background: #f8fafc;
+  --background: #ffffff;
   --foreground: #0f172a;
   
   --card: #ffffff;
   --card-foreground: #0f172a;
   
-  --primary: #4f46e5;
-  --primary-foreground: #ffffff;
+  --primary: #eab308; /* yellow-500 */
+  --primary-foreground: #000000;
   
-  --muted: #f1f5f9;
+  --muted: #f8fafc;
   --muted-foreground: #64748b;
   
-  --accent: #e0e7ff;
-  --accent-foreground: #4f46e5;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
   
   --border: #e2e8f0;
   
-  --radius: 0.75rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #020617;
-    --foreground: #f8fafc;
-    
-    --card: #0f172a;
-    --card-foreground: #f8fafc;
-    
-    --primary: #6366f1;
-    --primary-foreground: #ffffff;
-    
-    --muted: #1e293b;
-    --muted-foreground: #94a3b8;
-    
-    --accent: #1e293b;
-    --accent-foreground: #818cf8;
-    
-    --border: #1e293b;
-  }
+  --radius: 0.5rem; /* Slightly sharper corners for wireframe feel */
 }
 
 body {
@@ -67,17 +46,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom Glassmorphism Utility */
+/* Custom Glassmorphism Utility (Removed dark mode) */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-@media (prefers-color-scheme: dark) {
-  .glass {
-    background: rgba(15, 23, 42, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+  border: 1px solid rgba(226, 232, 240, 1);
 }

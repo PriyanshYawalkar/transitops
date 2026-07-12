@@ -3,67 +3,44 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-  LayoutDashboard,
-  Truck,
-  Users,
-  Map,
-  Wrench,
-  Receipt,
-  LogOut,
-  Settings
-} from "lucide-react";
+import { Hexagon, LogOut } from "lucide-react";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
 
 const routes = [
-  {
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    href: "/",
-    color: "text-sky-500",
-  },
-  {
-    label: "Vehicles",
-    icon: Truck,
-    href: "/vehicles",
-    color: "text-violet-500",
-  },
-  {
-    label: "Drivers",
-    icon: Users,
-    href: "/drivers",
-    color: "text-pink-700",
-  },
-  {
-    label: "Trips",
-    icon: Map,
-    href: "/trips",
-    color: "text-orange-700",
-  },
-  {
-    label: "Maintenance",
-    icon: Wrench,
-    href: "/maintenance",
-    color: "text-emerald-500",
-  },
-  {
-    label: "Expenses",
-    icon: Receipt,
-    href: "/expenses",
-    color: "text-gray-500",
-  },
+  { label: "Dashboard", href: "/" },
+  { label: "Fleet", href: "/vehicles" }, // Mapping Vehicles to Fleet as per mockup
+  { label: "Drivers", href: "/drivers" },
+  { label: "Trips", href: "/trips" },
+  { label: "Maintenance", href: "/maintenance" },
+  { label: "Fuel & Expenses", href: "/expenses" },
+  { label: "Settings", href: "/settings" },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      localStorage.removeItem("test_user_loggedIn");
+      if (auth) await signOut(auth);
+      window.location.href = "/login";
+    } catch (e) {
+      console.error(e);
+      window.location.href = "/login";
+    }
+  };
 
   return (
-    <div className="space-y-4 py-4 flex flex-col h-full bg-card text-card-foreground border-r glass">
-      <div className="px-3 py-2 flex-1">
-        <Link href="/" className="flex items-center pl-3 mb-14">
-          <div className="relative w-8 h-8 mr-4 bg-primary rounded-lg flex items-center justify-center">
-             <Truck className="w-5 h-5 text-primary-foreground" />
+    <div className="flex flex-col h-full bg-[#f8fafc] text-slate-700 border-r border-slate-200">
+      <div className="px-6 py-8 flex-1">
+        <Link href="/" className="flex items-center gap-3 mb-10">
+          <div className="bg-yellow-500 p-1.5 rounded-md">
+            <Hexagon className="h-5 w-5 text-black fill-current" />
           </div>
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-xl font-bold tracking-wide text-slate-900">
             TransitOps
           </h1>
         </Link>
@@ -73,39 +50,26 @@ export function Sidebar() {
               key={route.href}
               href={route.href}
               className={cn(
-                "text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition-colors",
-                pathname === route.href ? "text-primary bg-primary/10" : "text-muted-foreground"
+                "text-sm flex py-2 px-3 w-full justify-start font-medium cursor-pointer rounded-md transition-colors",
+                pathname === route.href || (pathname.startsWith(route.href) && route.href !== "/") 
+                  ? "bg-slate-200 text-slate-900" 
+                  : "hover:bg-slate-100 hover:text-slate-900 text-slate-500"
               )}
             >
-              <div className="flex items-center flex-1">
-                <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
-                {route.label}
-              </div>
+              {route.label}
             </Link>
           ))}
         </div>
       </div>
       
-      <div className="px-3 py-2">
-        <div className="space-y-1">
-          <Link
-            href="/settings"
-            className="text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-primary hover:bg-primary/10 rounded-lg transition-colors text-muted-foreground"
-          >
-            <div className="flex items-center flex-1">
-              <Settings className="h-5 w-5 mr-3 text-slate-500" />
-              Settings
-            </div>
-          </Link>
-          <button
-            className="text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:bg-red-500/10 hover:text-red-500 rounded-lg transition-colors text-muted-foreground"
-          >
-            <div className="flex items-center flex-1">
-              <LogOut className="h-5 w-5 mr-3 text-red-500" />
-              Logout
-            </div>
-          </button>
-        </div>
+      <div className="px-6 py-6 border-t border-slate-200">
+        <button
+          onClick={handleLogout}
+          className="text-sm flex py-2 px-3 w-full justify-start font-medium cursor-pointer hover:bg-slate-200 hover:text-slate-900 rounded-md transition-colors text-slate-500"
+        >
+          <LogOut className="h-4 w-4 mr-3" />
+          Logout
+        </button>
       </div>
     </div>
   );

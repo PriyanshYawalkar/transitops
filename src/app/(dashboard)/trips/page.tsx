@@ -63,11 +63,9 @@ export default function TripsPage() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 h-[calc(100vh-8rem)]">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Trip Dispatcher</h1>
-        </div>
+    <div className="space-y-6 h-[calc(100vh-8rem)]">
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-2xl font-bold tracking-tight">Trip Dispatcher</h1>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8 h-full">
