@@ -1,0 +1,197 @@
+from datetime import datetime, timezone
+
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from extensions import db
+
+
+def utc_now():
+    return datetime.now(timezone.utc)
+
+
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False, index=True)
+    password_hash = db.Column(db.String(255), nullable=False)
+    role = db.Column(db.String(20), nullable=False, default="admin")
+    created_at = db.Column(db.DateTime, default=utc_now)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "role": self.role,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class Vehicle(db.Model):
+    __tablename__ = "vehicles"
+
+    id = db.Column(db.Integer, primary_key=True)
+    registration_number = db.Column(db.String(50), unique=True, nullable=False)
+    type = db.Column(db.String(50), nullable=False)
+    model = db.Column(db.String(100))
+    capacity = db.Column(db.Integer)
+    status = db.Column(db.String(20), nullable=False, default="active")
+    created_at = db.Column(db.DateTime, default=utc_now)
+
+    trips = db.relationship("Trip", backref="vehicle", lazy=True)
+    maintenance_records = db.relationship("Maintenance", backref="vehicle", lazy=True)
+    fuel_logs = db.relationship("FuelLog", backref="vehicle", lazy=True)
+    expenses = db.relationship("Expense", backref="vehicle", lazy=True)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "registration_number": self.registration_number,
+            "type": self.type,
+            "model": self.model,
+            "capacity": self.capacity,
+            "status": self.status,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class Driver(db.Model):
+    __tablename__ = "drivers"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    license_number = db.Column(db.String(50), unique=True, nullable=False)
+    phone = db.Column(db.String(20))
+    email = db.Column(db.String(120))
+    status = db.Column(db.String(20), nullable=False, default="active")
+    created_at = db.Column(db.DateTime, default=utc_now)
+
+    trips = db.relationship("Trip", backref="driver", lazy=True)
+    fuel_logs = db.relationship("FuelLog", backref="driver", lazy=True)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "license_number": self.license_number,
+            "phone": self.phone,
+            "email": self.email,
+            "status": self.status,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class Trip(db.Model):
+    __tablename__ = "trips"
+
+    id = db.Column(db.Integer, primary_key=True)
+    vehicle_id = db.Column(db.Integer, db.ForeignKey("vehicles.id"), nullable=False)
+    driver_id = db.Column(db.Integer, db.ForeignKey("drivers.id"), nullable=False)
+    origin = db.Column(db.String(150), nullable=False)
+    destination = db.Column(db.String(150), nullable=False)
+    scheduled_start = db.Column(db.DateTime)
+    start_time = db.Column(db.DateTime)
+    end_time = db.Column(db.DateTime)
+    distance_km = db.Column(db.Float)
+    status = db.Column(db.String(20), nullable=False, default="scheduled")
+    notes = db.Column(db.String(255))
+    created_at = db.Column(db.DateTime, default=utc_now)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "vehicle_id": self.vehicle_id,
+            "driver_id": self.driver_id,
+            "origin": self.origin,
+            "destination": self.destination,
+            "scheduled_start": self.scheduled_start.isoformat() if self.scheduled_start else None,
+            "start_time": self.start_time.isoformat() if self.start_time else None,
+            "end_time": self.end_time.isoformat() if self.end_time else None,
+            "distance_km": self.distance_km,
+            "status": self.status,
+            "notes": self.notes,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class Maintenance(db.Model):
+    __tablename__ = "maintenance_records"
+
+    id = db.Column(db.Integer, primary_key=True)
+    vehicle_id = db.Column(db.Integer, db.ForeignKey("vehicles.id"), nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+    cost = db.Column(db.Float, default=0)
+    service_date = db.Column(db.DateTime, nullable=False)
+    next_service_date = db.Column(db.DateTime)
+    status = db.Column(db.String(20), nullable=False, default="pending")
+    created_at = db.Column(db.DateTime, default=utc_now)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "vehicle_id": self.vehicle_id,
+            "description": self.description,
+            "cost": self.cost,
+            "service_date": self.service_date.isoformat() if self.service_date else None,
+            "next_service_date": self.next_service_date.isoformat() if self.next_service_date else None,
+            "status": self.status,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class FuelLog(db.Model):
+    __tablename__ = "fuel_logs"
+
+    id = db.Column(db.Integer, primary_key=True)
+    vehicle_id = db.Column(db.Integer, db.ForeignKey("vehicles.id"), nullable=False)
+    driver_id = db.Column(db.Integer, db.ForeignKey("drivers.id"))
+    liters = db.Column(db.Float, nullable=False)
+    cost_per_liter = db.Column(db.Float, nullable=False)
+    total_cost = db.Column(db.Float, nullable=False)
+    odometer_reading = db.Column(db.Float)
+    date = db.Column(db.DateTime, nullable=False)
+    created_at = db.Column(db.DateTime, default=utc_now)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "vehicle_id": self.vehicle_id,
+            "driver_id": self.driver_id,
+            "liters": self.liters,
+            "cost_per_liter": self.cost_per_liter,
+            "total_cost": self.total_cost,
+            "odometer_reading": self.odometer_reading,
+            "date": self.date.isoformat() if self.date else None,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class Expense(db.Model):
+    __tablename__ = "expenses"
+
+    id = db.Column(db.Integer, primary_key=True)
+    vehicle_id = db.Column(db.Integer, db.ForeignKey("vehicles.id"))
+    category = db.Column(db.String(50), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    description = db.Column(db.String(255))
+    date = db.Column(db.DateTime, nullable=False)
+    created_at = db.Column(db.DateTime, default=utc_now)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "vehicle_id": self.vehicle_id,
+            "category": self.category,
+            "amount": self.amount,
+            "description": self.description,
+            "date": self.date.isoformat() if self.date else None,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }

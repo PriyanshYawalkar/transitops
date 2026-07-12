@@ -1,0 +1,27 @@
+import re
+from datetime import datetime
+
+EMAIL_REGEX = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
+def validate_required_fields(data, required_fields):
+    if not isinstance(data, dict):
+        return ["Request body must be a JSON object"]
+
+    missing = [field for field in required_fields if not data.get(field) and data.get(field) != 0]
+    if missing:
+        return [f"Missing required field: {field}" for field in missing]
+    return []
+
+
+def is_valid_email(email):
+    return bool(email) and bool(EMAIL_REGEX.match(email))
+
+
+def parse_datetime(value, field_name="date"):
+    if value is None:
+        return None, None
+    try:
+        return datetime.fromisoformat(value), None
+    except (TypeError, ValueError):
+        return None, f"Invalid {field_name} format, expected ISO 8601 (e.g. 2026-07-12T09:00:00)"
