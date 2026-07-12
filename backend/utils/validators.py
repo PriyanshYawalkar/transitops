@@ -28,6 +28,16 @@ def validate_non_negative(value, field_name):
     return None
 
 
+def validate_range(value, field_name, min_value, max_value):
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return f"{field_name} must be a valid number"
+    if number < min_value or number > max_value:
+        return f"{field_name} must be between {min_value} and {max_value}"
+    return None
+
+
 def parse_datetime(value, field_name="date"):
     if value is None:
         return None, None
