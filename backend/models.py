@@ -102,7 +102,8 @@ class Driver(db.Model):
     fuel_logs = db.relationship("FuelLog", backref="driver", lazy=True)
 
     def is_license_expired(self, reference_time=None):
-        reference_time = reference_time or utc_now()
+        if reference_time is None:
+            reference_time = datetime.utcnow()
         return self.license_expiry_date is not None and self.license_expiry_date < reference_time
 
     def to_dict(self):
@@ -119,19 +120,24 @@ class Driver(db.Model):
         }
 
 
+TRIP_STATUSES = {"Draft", "Dispatched", "Completed", "Cancelled"}
+
+
 class Trip(db.Model):
     __tablename__ = "trips"
 
     id = db.Column(db.Integer, primary_key=True)
     vehicle_id = db.Column(db.Integer, db.ForeignKey("vehicles.id"), nullable=False)
     driver_id = db.Column(db.Integer, db.ForeignKey("drivers.id"), nullable=False)
-    origin = db.Column(db.String(150), nullable=False)
+    source = db.Column(db.String(150), nullable=False)
     destination = db.Column(db.String(150), nullable=False)
+    cargo_weight = db.Column(db.Float, nullable=False)
+    planned_distance = db.Column(db.Float)
     scheduled_start = db.Column(db.DateTime)
     start_time = db.Column(db.DateTime)
     end_time = db.Column(db.DateTime)
     distance_km = db.Column(db.Float)
-    status = db.Column(db.String(20), nullable=False, default="scheduled")
+    status = db.Column(db.String(20), nullable=False, default="Draft")
     notes = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=utc_now)
 
@@ -140,8 +146,10 @@ class Trip(db.Model):
             "id": self.id,
             "vehicle_id": self.vehicle_id,
             "driver_id": self.driver_id,
-            "origin": self.origin,
+            "source": self.source,
             "destination": self.destination,
+            "cargo_weight": self.cargo_weight,
+            "planned_distance": self.planned_distance,
             "scheduled_start": self.scheduled_start.isoformat() if self.scheduled_start else None,
             "start_time": self.start_time.isoformat() if self.start_time else None,
             "end_time": self.end_time.isoformat() if self.end_time else None,
