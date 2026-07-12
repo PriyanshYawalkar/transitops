@@ -66,6 +66,7 @@ class Vehicle(db.Model):
     maintenance_records = db.relationship("Maintenance", backref="vehicle", lazy=True)
     fuel_logs = db.relationship("FuelLog", backref="vehicle", lazy=True)
     expenses = db.relationship("Expense", backref="vehicle", lazy=True)
+    documents = db.relationship("VehicleDocument", backref="vehicle", lazy=True)
 
     def to_dict(self):
         return {
@@ -232,4 +233,22 @@ class Expense(db.Model):
             "description": self.description,
             "date": self.date.isoformat() if self.date else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+class VehicleDocument(db.Model):
+    __tablename__ = "vehicle_documents"
+
+    id = db.Column(db.Integer, primary_key=True)
+    vehicle_id = db.Column(db.Integer, db.ForeignKey("vehicles.id"), nullable=False)
+    document_name = db.Column(db.String(100), nullable=False)
+    file_path = db.Column(db.String(255), nullable=False)
+    uploaded_at = db.Column(db.DateTime, default=utc_now)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "vehicle_id": self.vehicle_id,
+            "document_name": self.document_name,
+            "file_path": self.file_path,
+            "uploaded_at": self.uploaded_at.isoformat() if self.uploaded_at else None,
         }

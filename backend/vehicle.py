@@ -156,3 +156,43 @@ def delete_vehicle(vehicle_id):
     db.session.delete(vehicle)
     db.session.commit()
     return success_response(message="Vehicle deleted successfully")
+
+from models import VehicleDocument
+import os
+
+@vehicle_bp.route("/<int:vehicle_id>/documents", methods=["POST"])
+@jwt_required()
+def upload_document(vehicle_id):
+    vehicle = Vehicle.query.get(vehicle_id)
+    if not vehicle:
+        return error_response("Vehicle not found", 404)
+        
+    data = request.get_json(silent=True) or {}
+    document_name = data.get("document_name")
+    
+    # In a real app, we'd use request.files and save the file.
+    # For now, we simulate a file path since we're using mock JSON uploads
+    file_path = f"/uploads/vehicles/{vehicle_id}_{document_name.replace(' ', '_')}.pdf" if document_name else None
+    
+    if not document_name:
+        return error_response("document_name is required", 400)
+        
+    doc = VehicleDocument(
+        vehicle_id=vehicle.id,
+        document_name=document_name,
+        file_path=file_path
+    )
+    
+    db.session.add(doc)
+    db.session.commit()
+    return success_response(doc.to_dict(), "Document uploaded successfully", 201)
+
+@vehicle_bp.route("/<int:vehicle_id>/documents", methods=["GET"])
+@jwt_required()
+def list_documents(vehicle_id):
+    vehicle = Vehicle.query.get(vehicle_id)
+    if not vehicle:
+        return error_response("Vehicle not found", 404)
+        
+    documents = VehicleDocument.query.filter_by(vehicle_id=vehicle_id).order_by(VehicleDocument.uploaded_at.desc()).all()
+    return success_response([doc.to_dict() for doc in documents])

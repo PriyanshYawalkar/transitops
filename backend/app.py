@@ -7,6 +7,7 @@ from utils.helpers import error_response
 
 from auth import auth_bp
 from vehicle import vehicle_bp
+from cron import cron_bp
 from driver import driver_bp
 from trip import trip_bp
 from maintenance import maintenance_bp
@@ -30,6 +31,7 @@ def create_app():
     app.register_blueprint(maintenance_bp)
     app.register_blueprint(fuel_bp)
     app.register_blueprint(expense_bp)
+    app.register_blueprint(cron_bp)
     app.register_blueprint(dashboard_bp)
 
     @app.route("/api/health", methods=["GET"])
