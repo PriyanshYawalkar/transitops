@@ -1,11 +1,8 @@
 "use client";
 import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
-import { Checkbox } from "@/components/ui/Checkbox"; // We might need to implement this or use standard input
 import { AlertCircle, Hexagon } from "lucide-react";
 
 export default function LoginPage() {
@@ -24,16 +21,14 @@ export default function LoginPage() {
       return;
     }
 
-    if (!auth) {
-      setError("Firebase is not initialized. Please set environment variables.");
+    // Mock Login for any credentials for now since firebase is removed
+    if (email && password) {
+      localStorage.setItem("test_user_loggedIn", "true");
+      window.location.href = "/";
       return;
     }
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push("/");
-    } catch (err: any) {
-      setError("Invalid credentials.");
-    }
+    
+    setError("Invalid credentials.");
   };
 
   return (

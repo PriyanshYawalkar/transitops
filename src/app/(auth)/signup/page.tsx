@@ -1,7 +1,5 @@
 "use client";
 import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
@@ -15,16 +13,15 @@ export default function SignupPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!auth) {
-      setError("Firebase is not initialized. Please set environment variables.");
+    
+    // Mock Signup since firebase is removed
+    if (email && password) {
+      localStorage.setItem("test_user_loggedIn", "true");
+      window.location.href = "/";
       return;
     }
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      router.push("/");
-    } catch (err: any) {
-      setError(err.message);
-    }
+    
+    setError("Please provide valid credentials.");
   };
 
   return (

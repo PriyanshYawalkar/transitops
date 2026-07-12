@@ -1,7 +1,10 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "@/lib/firebase";
-import { onAuthStateChanged, User } from "firebase/auth";
+
+interface User {
+  email: string | null;
+  uid: string;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -18,20 +21,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // BYPASS FOR LOCAL TEST CREDENTIALS
     const isTestUser = typeof window !== 'undefined' && localStorage.getItem("test_user_loggedIn") === "true";
     if (isTestUser) {
-      setUser({ email: "test@transitops.io", uid: "test-user-123" } as User);
-      setLoading(false);
-      return;
+      setUser({ email: "test@transitops.io", uid: "test-user-123" });
     }
-
-    if (!auth) {
-      setLoading(false);
-      return;
-    }
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-    return () => unsubscribe();
+    setLoading(false);
   }, []);
 
   return (

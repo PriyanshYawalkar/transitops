@@ -1,12 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Hexagon, LogOut } from "lucide-react";
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
 
 const routes = [
   { label: "Dashboard", href: "/" },
@@ -25,7 +22,6 @@ export function Sidebar() {
   const handleLogout = async () => {
     try {
       localStorage.removeItem("test_user_loggedIn");
-      if (auth) await signOut(auth);
       window.location.href = "/login";
     } catch (e) {
       console.error(e);
