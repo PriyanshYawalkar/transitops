@@ -24,9 +24,12 @@ def summary():
     vehicles_on_trip = Vehicle.query.filter_by(status="On Trip").count()
 
     total_drivers = Driver.query.count()
-    active_drivers = Driver.query.filter_by(status="active").count()
+    active_drivers = Driver.query.filter_by(status="Available").count()
+    drivers_on_trip = Driver.query.filter_by(status="On Trip").count()
 
-    ongoing_trips = Trip.query.filter_by(status="ongoing").count()
+    total_trips = Trip.query.count()
+    ongoing_trips = Trip.query.filter_by(status="Dispatched").count()
+    completed_trips = Trip.query.filter_by(status="Completed").count()
     trips_today = Trip.query.filter(Trip.created_at >= today_start).count()
 
     monthly_expenses = (
@@ -41,7 +44,24 @@ def summary():
         .scalar()
     )
 
+    monthly_fuel_liters = (
+        db.session.query(func.coalesce(func.sum(FuelLog.liters), 0))
+        .filter(FuelLog.date >= month_start)
+        .scalar()
+    )
+
+    monthly_maintenance_cost = (
+        db.session.query(func.coalesce(func.sum(Maintenance.cost), 0))
+        .filter(Maintenance.service_date >= month_start)
+        .scalar()
+    )
+
     pending_maintenance = Maintenance.query.filter_by(status="pending").count()
+
+    operational_cost = monthly_expenses + monthly_fuel_cost + monthly_maintenance_cost
+    fleet_utilization_percent = (
+        round((vehicles_on_trip / total_vehicles) * 100, 2) if total_vehicles else 0
+    )
 
     return success_response(
         {
@@ -54,9 +74,12 @@ def summary():
             "drivers": {
                 "total": total_drivers,
                 "active": active_drivers,
+                "on_trip": drivers_on_trip,
             },
             "trips": {
+                "total": total_trips,
                 "ongoing": ongoing_trips,
+                "completed": completed_trips,
                 "today": trips_today,
             },
             "maintenance": {
@@ -65,7 +88,11 @@ def summary():
             "finance_this_month": {
                 "total_expenses": round(monthly_expenses, 2),
                 "total_fuel_cost": round(monthly_fuel_cost, 2),
+                "total_fuel_liters": round(monthly_fuel_liters, 2),
+                "total_maintenance_cost": round(monthly_maintenance_cost, 2),
+                "operational_cost": round(operational_cost, 2),
             },
+            "fleet_utilization_percent": fleet_utilization_percent,
         }
     )
 
