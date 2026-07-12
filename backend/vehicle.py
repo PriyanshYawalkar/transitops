@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from flask_jwt_extended import jwt_required
+from utils.decorators import firebase_auth_required as jwt_required
 
 from extensions import db
 from models import VEHICLE_STATUSES, Vehicle

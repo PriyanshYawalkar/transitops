@@ -1,46 +1,55 @@
 "use client";
 
-import { Bell, Search, User } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { Badge } from "@/components/ui/Badge";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function TopBar() {
   const pathname = usePathname();
+  const { user } = useAuth();
   
   const getPageTitle = () => {
     switch(pathname) {
       case '/': return 'Dashboard';
-      case '/vehicles': return 'Vehicle Registry';
-      case '/drivers': return 'Driver Management';
-      case '/trips': return 'Trip Management';
-      case '/maintenance': return 'Maintenance Logs';
-      case '/expenses': return 'Fuel & Expenses';
+      case '/vehicles': return 'Fleet';
+      case '/drivers': return 'Drivers';
+      case '/trips': return 'Trip Dispatcher';
+      case '/maintenance': return 'Maintenance';
+      case '/expenses': return 'Fuel & Expense Management';
+      case '/settings': return 'Settings & RBAC';
       default: return 'TransitOps';
     }
   };
 
   return (
-    <header className="h-16 flex items-center justify-between px-6 border-b bg-card/50 backdrop-blur-md sticky top-0 z-10 glass">
-      <h2 className="text-xl font-semibold tracking-tight">
-        {getPageTitle()}
-      </h2>
+    <header className="h-16 flex items-center justify-between px-8 border-b border-slate-200 bg-white sticky top-0 z-10">
+      <div className="flex items-center gap-6">
+        <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+          {getPageTitle()}
+        </h2>
+      </div>
       
-      <div className="flex items-center space-x-4">
-        <div className="relative hidden md:block">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+      <div className="flex items-center space-x-4 flex-1 justify-between max-w-3xl ml-8">
+        <div className="relative w-full max-w-md hidden md:block">
           <input
             type="search"
             placeholder="Search..."
-            className="h-9 w-64 rounded-md border border-input bg-background pl-8 pr-3 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-4 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-yellow-500"
           />
         </div>
         
-        <button className="relative p-2 rounded-full hover:bg-muted transition-colors">
-          <Bell className="h-5 w-5 text-muted-foreground" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
-        </button>
-        
-        <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center cursor-pointer border border-primary/30">
-          <User className="h-4 w-4 text-primary" />
+        <div className="flex items-center gap-4">
+          <span className="text-sm font-medium text-slate-700 hidden sm:block">
+            {user?.email?.split("@")[0] || "Raven K."}
+          </span>
+          <Badge variant="default" className="bg-blue-100 text-blue-700 hover:bg-blue-100 shadow-none border-0 text-xs py-0.5">
+            Dispatcher
+          </Badge>
+          <div className="h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center border border-slate-300">
+            <span className="text-xs font-bold text-slate-600">
+              {(user?.email?.[0] || "R").toUpperCase()}
+            </span>
+          </div>
         </div>
       </div>
     </header>

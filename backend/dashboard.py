@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
 from flask import Blueprint
-from flask_jwt_extended import jwt_required
+from utils.decorators import firebase_auth_required as jwt_required
 from sqlalchemy import func
 
 from extensions import db
