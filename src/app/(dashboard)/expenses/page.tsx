@@ -76,9 +76,9 @@ export default function ExpensesPage() {
                     <th className="px-6 py-3 font-semibold tracking-wider">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 bg-white text-slate-900">
                   {mockExpenses.map((exp) => (
-                    <tr key={exp.id} className="hover:bg-slate-50">
+                    <tr key={exp.id} className="hover:bg-slate-50 bg-white">
                       <td className="px-6 py-4 font-medium text-slate-900">{exp.trip}</td>
                       <td className="px-6 py-4">{exp.vehicle}</td>
                       <td className="px-6 py-4">{exp.toll}</td>
