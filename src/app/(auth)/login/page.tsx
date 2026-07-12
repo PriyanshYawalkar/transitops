@@ -39,8 +39,8 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen bg-white text-slate-900">
       
-      {/* LEFT PANEL: Dark Theme */}
-      <div className="hidden lg:flex lg:w-1/3 bg-[#1E1E1E] flex-col justify-between p-12 text-white">
+      {/* LEFT PANEL: Light Theme */}
+      <div className="hidden lg:flex lg:w-1/3 bg-slate-50 flex-col justify-between p-12 text-slate-900 border-r border-slate-200">
         <div>
           <div className="flex items-center gap-3 mb-2">
             <div className="bg-yellow-500 p-2 rounded-md">
@@ -48,12 +48,12 @@ export default function LoginPage() {
             </div>
             <h1 className="text-2xl font-bold tracking-wide">TransitOps</h1>
           </div>
-          <p className="text-sm text-slate-400 font-medium">Smart Transport Operations Platform</p>
+          <p className="text-sm text-slate-500 font-medium">Smart Transport Operations Platform</p>
         </div>
 
         <div className="space-y-4">
-          <h3 className="font-semibold text-lg">One login, four roles:</h3>
-          <ul className="space-y-2 text-sm text-slate-300">
+          <h3 className="font-semibold text-lg text-slate-800">One login, four roles:</h3>
+          <ul className="space-y-2 text-sm text-slate-600">
             <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-yellow-500" /> Fleet Manager</li>
             <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-yellow-500" /> Dispatcher</li>
             <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-yellow-500" /> Safety Officer</li>
@@ -61,7 +61,7 @@ export default function LoginPage() {
           </ul>
         </div>
 
-        <div className="text-xs text-slate-500">
+        <div className="text-xs text-slate-400">
           TRANSITOPS © 2024 RBAC ADM
         </div>
       </div>
