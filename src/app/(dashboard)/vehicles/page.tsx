@@ -20,16 +20,16 @@ export default function VehiclesPage() {
   return (
     <div className="space-y-6">
       
-      <div className="flex items-center justify-between bg-white p-4 rounded-md border border-slate-200 shadow-sm">
+      <div className="flex items-center justify-between bg-card p-4 rounded-md border border-border shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="text-sm text-slate-500 font-medium border-r border-slate-200 pr-4">
+          <div className="text-sm text-muted-foreground font-medium border-r border-border pr-4">
             Filter: 
-            <select className="ml-2 border border-slate-200 rounded text-slate-700 bg-slate-50 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-yellow-500">
+            <select className="ml-2 border border-input rounded text-foreground bg-muted px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary">
               <option>Vehicle Type: All</option>
             </select>
           </div>
-          <div className="text-sm text-slate-500 font-medium">
-            <select className="border border-slate-200 rounded text-slate-700 bg-slate-50 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-yellow-500">
+          <div className="text-sm text-muted-foreground font-medium">
+            <select className="border border-input rounded text-foreground bg-muted px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary">
               <option>Status: All</option>
             </select>
           </div>
@@ -39,10 +39,10 @@ export default function VehiclesPage() {
         </Button>
       </div>
 
-      <Card className="border border-slate-200 shadow-sm bg-white rounded-md overflow-hidden">
+      <Card className="border border-border shadow-sm bg-card rounded-md overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left text-slate-600">
-            <thead className="text-[10px] uppercase bg-slate-50 text-slate-500 border-b border-slate-200">
+          <table className="w-full text-sm text-left text-muted-foreground">
+            <thead className="text-[10px] uppercase bg-muted/50 text-muted-foreground border-b border-border">
               <tr>
                 <th className="px-6 py-3 font-semibold tracking-wider">Reg No. (Unique)</th>
                 <th className="px-6 py-3 font-semibold tracking-wider">Vehicle</th>
@@ -53,10 +53,10 @@ export default function VehiclesPage() {
                 <th className="px-6 py-3 font-semibold tracking-wider">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 bg-white text-slate-900">
+            <tbody className="divide-y divide-border">
               {mockVehicles.map((vehicle) => (
-                <tr key={vehicle.id} className="hover:bg-slate-50 bg-white">
-                  <td className="px-6 py-4 font-medium text-slate-900">{vehicle.reg}</td>
+                <tr key={vehicle.id} className="hover:bg-muted/50 transition-colors">
+                  <td className="px-6 py-4 font-medium text-foreground">{vehicle.reg}</td>
                   <td className="px-6 py-4">{vehicle.name}</td>
                   <td className="px-6 py-4">{vehicle.type}</td>
                   <td className="px-6 py-4">{vehicle.cap}</td>
@@ -83,30 +83,30 @@ export default function VehiclesPage() {
           {/* Form details omitted for brevity, keeping it functional */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-600">Registration Number</label>
-              <input required className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500" placeholder="e.g. CG 04 AF 0001" />
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Registration Number</label>
+              <input required className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground" placeholder="e.g. CG 04 AF 0001" />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-600">Name/Model</label>
-              <input required className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500" placeholder="e.g. Van-05" />
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Name/Model</label>
+              <input required className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground" placeholder="e.g. Van-05" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-600">Vehicle Type</label>
-              <select className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500">
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Vehicle Type</label>
+              <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground">
                 <option>Van</option>
                 <option>Pickup</option>
                 <option>Heavy Truck</option>
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-600">Max Capacity (kg)</label>
-              <input required type="number" className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500" placeholder="500" />
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Max Capacity (kg)</label>
+              <input required type="number" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground" placeholder="500" />
             </div>
           </div>
           <div className="pt-6 flex justify-end space-x-3">
-            <Button variant="outline" type="button" onClick={() => setIsModalOpen(false)} className="border-slate-200 text-slate-600">Cancel</Button>
+            <Button variant="outline" type="button" onClick={() => setIsModalOpen(false)} className="border-border text-foreground hover:bg-muted/50">Cancel</Button>
             <Button type="submit" className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">Save Vehicle</Button>
           </div>
         </form>

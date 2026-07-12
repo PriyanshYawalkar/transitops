@@ -32,10 +32,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-white text-slate-900">
+    <div className="flex min-h-screen bg-background text-foreground">
       
-      {/* LEFT PANEL: Light Theme */}
-      <div className="hidden lg:flex lg:w-1/3 bg-slate-50 flex-col justify-between p-12 text-slate-900 border-r border-slate-200">
+      {/* LEFT PANEL: Theme */}
+      <div className="hidden lg:flex lg:w-1/3 bg-muted flex-col justify-between p-12 text-foreground border-r border-border">
         <div>
           <div className="flex items-center gap-3 mb-2">
             <div className="bg-yellow-500 p-2 rounded-md">
@@ -76,7 +76,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 required
-                className="w-full flex h-11 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500 transition-colors"
+                className="w-full flex h-11 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors"
                 placeholder="manager@transitops.io"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -88,7 +88,7 @@ export default function LoginPage() {
               <input
                 type="password"
                 required
-                className="w-full flex h-11 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500 transition-colors"
+                className="w-full flex h-11 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-colors"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

@@ -19,14 +19,13 @@
 }
 
 :root {
-  color-scheme: light;
   --background: #ffffff;
   --foreground: #0f172a;
   
   --card: #ffffff;
   --card-foreground: #0f172a;
   
-  --primary: #eab308; /* yellow-500 */
+  --primary: #eab308;
   --primary-foreground: #000000;
   
   --muted: #f8fafc;
@@ -37,7 +36,26 @@
   
   --border: #e2e8f0;
   
-  --radius: 0.5rem; /* Slightly sharper corners for wireframe feel */
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: #020817;
+  --foreground: #f8fafc;
+  
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
+  
+  --primary: #eab308;
+  --primary-foreground: #000000;
+  
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  
+  --accent: #1e293b;
+  --accent-foreground: #f8fafc;
+  
+  --border: #1e293b;
 }
 
 body {
@@ -53,4 +71,9 @@ body {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(226, 232, 240, 1);
+}
+
+.dark .glass {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(30, 41, 59, 1);
 }

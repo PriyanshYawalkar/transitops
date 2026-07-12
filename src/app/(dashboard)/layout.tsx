@@ -26,7 +26,7 @@ export default function DashboardLayout({
   if (!user) return null;
 
   return (
-    <div className="flex h-screen w-full relative bg-white">
+    <div className="flex h-screen w-full relative bg-background">
       {/* Sidebar */}
       <div className="hidden md:flex md:w-64 md:flex-col fixed inset-y-0 z-50">
         <Sidebar />
@@ -37,7 +37,7 @@ export default function DashboardLayout({
         <TopBar />
         
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-20 bg-[#f8fafc]">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-20 bg-muted/30">
           <div className="mx-auto max-w-7xl h-full">
             {children}
           </div>

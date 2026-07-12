@@ -76,26 +76,26 @@ export default function TripsPage() {
           <div className="space-y-2">
             <h2 className="text-xs font-semibold text-muted-foreground tracking-wider uppercase mb-4">Trip Lifecycle</h2>
             <div className="flex items-center justify-between relative px-2">
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-200 -z-10 rounded-full"></div>
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-border -z-10 rounded-full"></div>
               
-              <div className="flex flex-col items-center gap-1 z-10 bg-white px-1">
-                <div className="w-5 h-5 rounded-full bg-green-500 ring-4 ring-white"></div>
+              <div className="flex flex-col items-center gap-1 z-10 bg-background px-1">
+                <div className="w-5 h-5 rounded-full bg-green-500 ring-4 ring-background"></div>
                 <span className="text-xs font-medium text-green-600">Draft</span>
               </div>
               
-              <div className="flex flex-col items-center gap-1 z-10 bg-white px-1">
-                <div className="w-5 h-5 rounded-full bg-blue-500 ring-4 ring-white"></div>
+              <div className="flex flex-col items-center gap-1 z-10 bg-background px-1">
+                <div className="w-5 h-5 rounded-full bg-blue-500 ring-4 ring-background"></div>
                 <span className="text-xs font-medium text-blue-600">Dispatched</span>
               </div>
               
-              <div className="flex flex-col items-center gap-1 z-10 bg-white px-1">
-                <div className="w-5 h-5 rounded-full bg-slate-300 ring-4 ring-white"></div>
-                <span className="text-xs font-medium text-slate-400">Completed</span>
+              <div className="flex flex-col items-center gap-1 z-10 bg-background px-1">
+                <div className="w-5 h-5 rounded-full bg-muted ring-4 ring-background"></div>
+                <span className="text-xs font-medium text-muted-foreground">Completed</span>
               </div>
 
-              <div className="flex flex-col items-center gap-1 z-10 bg-white px-1">
-                <div className="w-5 h-5 rounded-full bg-slate-300 ring-4 ring-white"></div>
-                <span className="text-xs font-medium text-slate-400">Cancelled</span>
+              <div className="flex flex-col items-center gap-1 z-10 bg-background px-1">
+                <div className="w-5 h-5 rounded-full bg-muted ring-4 ring-background"></div>
+                <span className="text-xs font-medium text-muted-foreground">Cancelled</span>
               </div>
             </div>
           </div>
@@ -109,7 +109,7 @@ export default function TripsPage() {
                 <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Source</label>
                 <input 
                   type="text" 
-                  className="w-full flex h-10 rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="Gandhinagar Depot" 
                 />
               </div>
@@ -118,7 +118,7 @@ export default function TripsPage() {
                 <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Destination</label>
                 <input 
                   type="text" 
-                  className="w-full flex h-10 rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="Ahmedabad Hub" 
                 />
               </div>
@@ -126,7 +126,7 @@ export default function TripsPage() {
               <div className="space-y-1.5">
                 <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Vehicle (Available Only)</label>
                 <select 
-                  className="w-full flex h-10 rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   value={selectedVehicleId}
                   onChange={(e) => setSelectedVehicleId(e.target.value)}
                 >
@@ -139,7 +139,7 @@ export default function TripsPage() {
 
               <div className="space-y-1.5">
                 <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Driver (Available Only)</label>
-                <select className="w-full flex h-10 rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <select className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <option value="">Select Driver</option>
                   {mockDrivers.map(d => (
                     <option key={d.id} value={d.id}>{d.name}</option>
@@ -151,7 +151,7 @@ export default function TripsPage() {
                 <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Cargo Weight (KG)</label>
                 <input 
                   type="number" 
-                  className="w-full flex h-10 rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   placeholder="700"
                   value={cargoWeight}
                   onChange={(e) => setCargoWeight(e.target.value)}
@@ -162,7 +162,7 @@ export default function TripsPage() {
                 <label className="text-xs text-muted-foreground uppercase tracking-wide font-medium">Planned Distance (KM)</label>
                 <input 
                   type="number" 
-                  className="w-full flex h-10 rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   placeholder="38" 
                 />
               </div>
@@ -188,17 +188,17 @@ export default function TripsPage() {
           
           <div className="space-y-4">
             {mockTrips.map((trip) => (
-              <Card key={trip.id} className="relative overflow-hidden border-dashed bg-white">
+              <Card key={trip.id} className="relative overflow-hidden border-dashed bg-card">
                 <CardContent className="p-5">
                   <div className="flex justify-between items-start mb-3">
-                    <span className="text-lg font-mono font-semibold text-slate-900">{trip.id}</span>
-                    <span className="text-sm font-medium text-slate-500">
+                    <span className="text-lg font-mono font-semibold text-foreground">{trip.id}</span>
+                    <span className="text-sm font-medium text-muted-foreground">
                       {trip.vehicle} {trip.driver && `/ ${trip.driver}`}
                     </span>
                   </div>
                   
-                  <div className="flex items-center text-md mb-6 text-slate-700">
-                    {trip.source} <Navigation className="mx-2 h-4 w-4 text-slate-400 rotate-90" /> {trip.destination}
+                  <div className="flex items-center text-md mb-6 text-foreground">
+                    {trip.source} <Navigation className="mx-2 h-4 w-4 text-muted-foreground rotate-90" /> {trip.destination}
                   </div>
 
                   <div className="flex items-center justify-between">
@@ -207,14 +207,14 @@ export default function TripsPage() {
                       className={`
                         w-32 rounded-lg 
                         ${trip.status === 'Dispatched' ? 'bg-blue-600 hover:bg-blue-700 text-white' : ''}
-                        ${trip.status === 'Draft' ? 'bg-slate-500 hover:bg-slate-600 text-white' : ''}
+                        ${trip.status === 'Draft' ? 'bg-muted hover:bg-muted/80 text-foreground' : ''}
                         ${trip.status === 'Cancelled' ? 'bg-red-600 hover:bg-red-700 text-white' : ''}
                       `}
                       onClick={trip.status === "Dispatched" ? handleTripComplete : undefined}
                     >
                       {trip.status}
                     </Button>
-                    <span className="text-sm text-slate-500 italic">
+                    <span className="text-sm text-muted-foreground italic">
                       {trip.timeInfo}
                     </span>
                   </div>
@@ -223,7 +223,7 @@ export default function TripsPage() {
             ))}
           </div>
 
-          <p className="text-xs text-slate-500 mt-8 italic">
+          <p className="text-xs text-muted-foreground mt-8 italic">
             On Complete: odometer → fuel log → expenses → Vehicle & Driver Available
           </p>
         </div>
@@ -235,14 +235,14 @@ export default function TripsPage() {
         title="Complete Trip"
       >
         <div className="space-y-4">
-          <p className="text-sm text-slate-500">Log the final odometer reading and any incurred fuel/expenses before completing the trip.</p>
+          <p className="text-sm text-muted-foreground">Log the final odometer reading and any incurred fuel/expenses before completing the trip.</p>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-700">Final Odometer</label>
-            <input type="number" className="w-full flex h-10 rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-white text-slate-900" />
+            <label className="text-xs font-medium text-muted-foreground">Final Odometer</label>
+            <input type="number" className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background text-foreground" />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-700">Fuel Added (Liters)</label>
-            <input type="number" className="w-full flex h-10 rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-white text-slate-900" />
+            <label className="text-xs font-medium text-muted-foreground">Fuel Added (Liters)</label>
+            <input type="number" className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background text-foreground" />
           </div>
           <Button className="w-full mt-4 bg-yellow-500 hover:bg-yellow-600 text-black font-semibold" onClick={() => setShowCompletionModal(false)}>Mark as Completed</Button>
         </div>

@@ -22,9 +22,9 @@ export function TopBar() {
   };
 
   return (
-    <header className="h-16 flex items-center justify-between px-8 border-b border-slate-200 bg-white sticky top-0 z-10">
+    <header className="h-16 flex items-center justify-between px-8 border-b border-border bg-background sticky top-0 z-10">
       <div className="flex items-center gap-6">
-        <h2 className="text-lg font-semibold tracking-tight text-slate-900">
+        <h2 className="text-lg font-semibold tracking-tight text-foreground">
           {getPageTitle()}
         </h2>
       </div>
@@ -34,19 +34,19 @@ export function TopBar() {
           <input
             type="search"
             placeholder="Search..."
-            className="h-9 w-full rounded-md border border-slate-200 bg-slate-50 px-4 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-yellow-500"
+            className="h-9 w-full rounded-md border border-input bg-muted px-4 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
           />
         </div>
         
         <div className="flex items-center gap-4">
-          <span className="text-sm font-medium text-slate-700 hidden sm:block">
+          <span className="text-sm font-medium text-foreground hidden sm:block">
             {user?.email?.split("@")[0] || "Raven K."}
           </span>
           <Badge variant="default" className="bg-blue-100 text-blue-700 hover:bg-blue-100 shadow-none border-0 text-xs py-0.5">
             Dispatcher
           </Badge>
-          <div className="h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center border border-slate-300">
-            <span className="text-xs font-bold text-slate-600">
+          <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center border border-border">
+            <span className="text-xs font-bold text-foreground">
               {(user?.email?.[0] || "R").toUpperCase()}
             </span>
           </div>

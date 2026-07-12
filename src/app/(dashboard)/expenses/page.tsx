@@ -26,15 +26,15 @@ export default function ExpensesPage() {
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="lg:w-1/2 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Fuel Logs</h2>
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Fuel Logs</h2>
             <Button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold shadow-none h-8 text-xs px-3" onClick={() => setIsModalOpen(true)}>
               + Log Fuel
             </Button>
           </div>
-          <Card className="border border-slate-200 shadow-sm bg-white overflow-hidden">
+          <Card className="border border-border shadow-sm bg-card overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left text-slate-600">
-                <thead className="text-[10px] uppercase bg-slate-50 text-slate-500 border-b border-slate-200">
+              <table className="w-full text-sm text-left text-muted-foreground">
+                <thead className="text-[10px] uppercase bg-muted/50 text-muted-foreground border-b border-border">
                   <tr>
                     <th className="px-6 py-3 font-semibold tracking-wider">Vehicle</th>
                     <th className="px-6 py-3 font-semibold tracking-wider">Date</th>
@@ -42,10 +42,10 @@ export default function ExpensesPage() {
                     <th className="px-6 py-3 font-semibold tracking-wider text-right">Cost (₹)</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 bg-white text-slate-900">
+                <tbody className="divide-y divide-border">
                   {mockFuelLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-slate-50 bg-white">
-                      <td className="px-6 py-4 font-medium text-slate-900">{log.vehicle}</td>
+                    <tr key={log.id} className="hover:bg-muted/50 transition-colors">
+                      <td className="px-6 py-4 font-medium text-foreground">{log.vehicle}</td>
                       <td className="px-6 py-4">{log.date}</td>
                       <td className="px-6 py-4">{log.liters}</td>
                       <td className="px-6 py-4 text-right">{log.cost}</td>
@@ -59,15 +59,15 @@ export default function ExpensesPage() {
 
         <div className="lg:w-1/2 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Other Expenses (Toll / Misc)</h2>
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Other Expenses (Toll / Misc)</h2>
             <Button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold shadow-none h-8 text-xs px-3">
               + Add Expense
             </Button>
           </div>
-          <Card className="border border-slate-200 shadow-sm bg-white overflow-hidden">
+          <Card className="border border-border shadow-sm bg-card overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left text-slate-600">
-                <thead className="text-[10px] uppercase bg-slate-50 text-slate-500 border-b border-slate-200">
+              <table className="w-full text-sm text-left text-muted-foreground">
+                <thead className="text-[10px] uppercase bg-muted/50 text-muted-foreground border-b border-border">
                   <tr>
                     <th className="px-6 py-3 font-semibold tracking-wider">Trip</th>
                     <th className="px-6 py-3 font-semibold tracking-wider">Vehicle</th>
@@ -76,10 +76,10 @@ export default function ExpensesPage() {
                     <th className="px-6 py-3 font-semibold tracking-wider">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 bg-white text-slate-900">
+                <tbody className="divide-y divide-border text-foreground">
                   {mockExpenses.map((exp) => (
-                    <tr key={exp.id} className="hover:bg-slate-50 bg-white">
-                      <td className="px-6 py-4 font-medium text-slate-900">{exp.trip}</td>
+                    <tr key={exp.id} className="hover:bg-muted/50 transition-colors">
+                      <td className="px-6 py-4 font-medium text-foreground">{exp.trip}</td>
                       <td className="px-6 py-4">{exp.vehicle}</td>
                       <td className="px-6 py-4">{exp.toll}</td>
                       <td className="px-6 py-4">{exp.other}</td>
@@ -99,32 +99,32 @@ export default function ExpensesPage() {
       
       <div className="flex justify-end p-4">
         <div className="text-right">
-          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Operational Cost (Auto) = Fuel + Maint</p>
-          <p className="text-3xl font-bold text-slate-900">34,070</p>
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Total Operational Cost (Auto) = Fuel + Maint</p>
+          <p className="text-3xl font-bold text-foreground">34,070</p>
         </div>
       </div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Log Fuel">
         <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setIsModalOpen(false); }}>
           <div className="space-y-2">
-            <label className="text-xs font-semibold uppercase tracking-wide text-slate-600">Vehicle</label>
-            <select className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500">
+            <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Vehicle</label>
+            <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground">
               <option>VAN-05</option>
               <option>TRUCK-12</option>
             </select>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-600">Liters Added</label>
-              <input required type="number" className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500" />
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Liters Added</label>
+              <input required type="number" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground" />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-600">Total Cost (₹)</label>
-              <input required type="number" className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500" />
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Total Cost (₹)</label>
+              <input required type="number" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground" />
             </div>
           </div>
           <div className="pt-6 flex justify-end space-x-3">
-            <Button variant="outline" type="button" onClick={() => setIsModalOpen(false)} className="border-slate-200 text-slate-600">Cancel</Button>
+            <Button variant="outline" type="button" onClick={() => setIsModalOpen(false)} className="border-border text-foreground hover:bg-muted/50">Cancel</Button>
             <Button type="submit" className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">Save Entry</Button>
           </div>
         </form>

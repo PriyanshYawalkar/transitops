@@ -19,16 +19,16 @@ export default function DriversPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between bg-white p-4 rounded-md border border-slate-200 shadow-sm">
+      <div className="flex items-center justify-between bg-card p-4 rounded-md border border-border shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="text-sm text-slate-500 font-medium border-r border-slate-200 pr-4">
+          <div className="text-sm text-muted-foreground font-medium border-r border-border pr-4">
             Filter: 
-            <select className="ml-2 border border-slate-200 rounded text-slate-700 bg-slate-50 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-yellow-500">
+            <select className="ml-2 border border-input rounded text-foreground bg-muted px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary">
               <option>Status: All</option>
             </select>
           </div>
-          <div className="text-sm text-slate-500 font-medium">
-            <input type="search" placeholder="Search driver..." className="border border-slate-200 rounded text-slate-700 bg-slate-50 px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-yellow-500 w-48" />
+          <div className="text-sm text-muted-foreground font-medium">
+            <input type="search" placeholder="Search driver..." className="border border-input rounded text-foreground bg-muted px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-primary w-48" />
           </div>
         </div>
         <Button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold shadow-none h-9" onClick={() => setIsModalOpen(true)}>
@@ -36,10 +36,10 @@ export default function DriversPage() {
         </Button>
       </div>
 
-      <Card className="border border-slate-200 shadow-sm bg-white rounded-md overflow-hidden">
+      <Card className="border border-border shadow-sm bg-card rounded-md overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left text-slate-600">
-            <thead className="text-[10px] uppercase bg-slate-50 text-slate-500 border-b border-slate-200">
+          <table className="w-full text-sm text-left text-muted-foreground">
+            <thead className="text-[10px] uppercase bg-muted/50 text-muted-foreground border-b border-border">
               <tr>
                 <th className="px-6 py-3 font-semibold tracking-wider">Driver Name</th>
                 <th className="px-6 py-3 font-semibold tracking-wider">License No.</th>
@@ -49,12 +49,12 @@ export default function DriversPage() {
                 <th className="px-6 py-3 font-semibold tracking-wider">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 bg-white text-slate-900">
+            <tbody className="divide-y divide-border">
               {mockDrivers.map((driver) => {
                 const isExpiringSoon = new Date(driver.expiry).getTime() - new Date().getTime() < 90 * 24 * 60 * 60 * 1000;
                 return (
-                  <tr key={driver.id} className="hover:bg-slate-50 bg-white">
-                    <td className="px-6 py-4 font-medium text-slate-900">{driver.name}</td>
+                  <tr key={driver.id} className="hover:bg-muted/50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-foreground">{driver.name}</td>
                     <td className="px-6 py-4">{driver.license}</td>
                     <td className="px-6 py-4">{driver.category}</td>
                     <td className="px-6 py-4">
@@ -91,35 +91,35 @@ export default function DriversPage() {
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Register New Driver">
         <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setIsModalOpen(false); }}>
           <div className="space-y-2">
-            <label className="text-xs font-semibold uppercase tracking-wide text-slate-600">Full Name</label>
-            <input required className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500" placeholder="e.g. Rahul Sharma" />
+            <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Full Name</label>
+            <input required className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground" placeholder="e.g. Rahul Sharma" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-600">License Number</label>
-              <input required className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500" placeholder="e.g. MH12-2015-1234567" />
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">License Number</label>
+              <input required className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground" placeholder="e.g. MH12-2015-1234567" />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-600">License Expiry</label>
-              <input required type="date" className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500" />
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">License Expiry</label>
+              <input required type="date" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-600">Category</label>
-              <select className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500">
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Category</label>
+              <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground">
                 <option>Light Commercial</option>
                 <option>Heavy Commercial</option>
                 <option>Hazardous Material</option>
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wide text-slate-600">Contact Number</label>
-              <input required type="tel" className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500" placeholder="+1 (555) 000-0000" />
+              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Contact Number</label>
+              <input required type="tel" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary text-foreground" placeholder="+1 (555) 000-0000" />
             </div>
           </div>
           <div className="pt-6 flex justify-end space-x-3">
-            <Button variant="outline" type="button" onClick={() => setIsModalOpen(false)} className="border-slate-200 text-slate-600">Cancel</Button>
+            <Button variant="outline" type="button" onClick={() => setIsModalOpen(false)} className="border-border text-foreground hover:bg-muted/50">Cancel</Button>
             <Button type="submit" className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">Save Driver</Button>
           </div>
         </form>
