@@ -2,13 +2,11 @@ from flask import Blueprint, request
 from utils.decorators import firebase_auth_required as jwt_required
 
 from extensions import db
-from models import Driver
+from models import DRIVER_STATUSES, Driver
 from utils.helpers import error_response, serialize_list, success_response
-from utils.validators import validate_required_fields
+from utils.validators import parse_datetime, validate_range, validate_required_fields
 
 driver_bp = Blueprint("driver", __name__, url_prefix="/api/drivers")
-
-ALLOWED_STATUSES = {"active", "inactive"}
 
 
 @driver_bp.route("", methods=["POST"])
@@ -16,24 +14,39 @@ ALLOWED_STATUSES = {"active", "inactive"}
 def create_driver():
     data = request.get_json(silent=True) or {}
 
-    errors = validate_required_fields(data, ["name", "license_number"])
+    errors = validate_required_fields(
+        data,
+        ["name", "license_number", "license_category", "license_expiry_date", "safety_score"],
+    )
     if errors:
-        return error_response(errors[0], 400)
+        return error_response("; ".join(errors), 400)
 
     license_number = data["license_number"].strip()
+    if not license_number:
+        return error_response("license_number cannot be empty", 400)
 
     if Driver.query.filter_by(license_number=license_number).first():
         return error_response("A driver with this license number already exists", 409)
 
-    status = data.get("status", "active")
-    if status not in ALLOWED_STATUSES:
-        return error_response(f"Status must be one of {sorted(ALLOWED_STATUSES)}", 400)
+    safety_score_error = validate_range(data["safety_score"], "safety_score", 0, 100)
+    if safety_score_error:
+        return error_response(safety_score_error, 400)
+
+    license_expiry_date, error = parse_datetime(data["license_expiry_date"], "license_expiry_date")
+    if error:
+        return error_response(error, 400)
+
+    status = data.get("status", "Available")
+    if status not in DRIVER_STATUSES:
+        return error_response(f"Status must be one of {sorted(DRIVER_STATUSES)}", 400)
 
     driver = Driver(
         name=data["name"].strip(),
         license_number=license_number,
-        phone=data.get("phone"),
-        email=data.get("email"),
+        license_category=data["license_category"].strip(),
+        license_expiry_date=license_expiry_date,
+        contact_number=data.get("contact_number"),
+        safety_score=data["safety_score"],
         status=status,
     )
 
@@ -79,20 +92,34 @@ def update_driver(driver_id):
 
     if "license_number" in data:
         license_number = data["license_number"].strip()
+        if not license_number:
+            return error_response("license_number cannot be empty", 400)
         existing = Driver.query.filter_by(license_number=license_number).first()
         if existing and existing.id != driver.id:
             return error_response("A driver with this license number already exists", 409)
         driver.license_number = license_number
 
-    if "phone" in data:
-        driver.phone = data["phone"]
+    if "license_category" in data:
+        driver.license_category = data["license_category"].strip()
 
-    if "email" in data:
-        driver.email = data["email"]
+    if "license_expiry_date" in data:
+        license_expiry_date, error = parse_datetime(data["license_expiry_date"], "license_expiry_date")
+        if error:
+            return error_response(error, 400)
+        driver.license_expiry_date = license_expiry_date
+
+    if "contact_number" in data:
+        driver.contact_number = data["contact_number"]
+
+    if "safety_score" in data:
+        safety_score_error = validate_range(data["safety_score"], "safety_score", 0, 100)
+        if safety_score_error:
+            return error_response(safety_score_error, 400)
+        driver.safety_score = data["safety_score"]
 
     if "status" in data:
-        if data["status"] not in ALLOWED_STATUSES:
-            return error_response(f"Status must be one of {sorted(ALLOWED_STATUSES)}", 400)
+        if data["status"] not in DRIVER_STATUSES:
+            return error_response(f"Status must be one of {sorted(DRIVER_STATUSES)}", 400)
         driver.status = data["status"]
 
     db.session.commit()

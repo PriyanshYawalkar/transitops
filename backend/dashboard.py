@@ -19,8 +19,9 @@ def summary():
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
     total_vehicles = Vehicle.query.count()
-    active_vehicles = Vehicle.query.filter_by(status="active").count()
-    vehicles_in_maintenance = Vehicle.query.filter_by(status="maintenance").count()
+    active_vehicles = Vehicle.query.filter_by(status="Available").count()
+    vehicles_in_maintenance = Vehicle.query.filter_by(status="In Shop").count()
+    vehicles_on_trip = Vehicle.query.filter_by(status="On Trip").count()
 
     total_drivers = Driver.query.count()
     active_drivers = Driver.query.filter_by(status="active").count()
@@ -48,6 +49,7 @@ def summary():
                 "total": total_vehicles,
                 "active": active_vehicles,
                 "in_maintenance": vehicles_in_maintenance,
+                "on_trip": vehicles_on_trip,
             },
             "drivers": {
                 "total": total_drivers,

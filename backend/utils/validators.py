@@ -18,6 +18,26 @@ def is_valid_email(email):
     return bool(email) and bool(EMAIL_REGEX.match(email))
 
 
+def validate_non_negative(value, field_name):
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return f"{field_name} must be a valid non-negative number"
+    if number < 0:
+        return f"{field_name} must be greater than or equal to 0"
+    return None
+
+
+def validate_range(value, field_name, min_value, max_value):
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return f"{field_name} must be a valid number"
+    if number < min_value or number > max_value:
+        return f"{field_name} must be between {min_value} and {max_value}"
+    return None
+
+
 def parse_datetime(value, field_name="date"):
     if value is None:
         return None, None

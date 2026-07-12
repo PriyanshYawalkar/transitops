@@ -2,13 +2,22 @@ from flask import Blueprint, request
 from utils.decorators import firebase_auth_required as jwt_required
 
 from extensions import db
-from models import Vehicle
+from models import VEHICLE_STATUSES, Vehicle
 from utils.helpers import error_response, serialize_list, success_response
-from utils.validators import validate_required_fields
+from utils.validators import validate_non_negative, validate_required_fields
 
 vehicle_bp = Blueprint("vehicle", __name__, url_prefix="/api/vehicles")
 
-ALLOWED_STATUSES = {"active", "maintenance", "inactive"}
+NUMERIC_FIELDS = ["maximum_load_capacity", "odometer", "acquisition_cost"]
+
+
+def _validate_numeric_fields(data, fields):
+    for field in fields:
+        if field in data:
+            error = validate_non_negative(data[field], field)
+            if error:
+                return error
+    return None
 
 
 @vehicle_bp.route("", methods=["POST"])
@@ -16,24 +25,43 @@ ALLOWED_STATUSES = {"active", "maintenance", "inactive"}
 def create_vehicle():
     data = request.get_json(silent=True) or {}
 
-    errors = validate_required_fields(data, ["registration_number", "type"])
+    errors = validate_required_fields(
+        data,
+        [
+            "registration_number",
+            "vehicle_name",
+            "vehicle_type",
+            "maximum_load_capacity",
+            "odometer",
+            "acquisition_cost",
+        ],
+    )
     if errors:
-        return error_response(errors[0], 400)
+        return error_response("; ".join(errors), 400)
 
     registration_number = data["registration_number"].strip()
+    if not registration_number:
+        return error_response("registration_number cannot be empty", 400)
 
     if Vehicle.query.filter_by(registration_number=registration_number).first():
         return error_response("A vehicle with this registration number already exists", 409)
 
-    status = data.get("status", "active")
-    if status not in ALLOWED_STATUSES:
-        return error_response(f"Status must be one of {sorted(ALLOWED_STATUSES)}", 400)
+    numeric_error = _validate_numeric_fields(data, NUMERIC_FIELDS)
+    if numeric_error:
+        return error_response(numeric_error, 400)
+
+    status = data.get("status", "Available")
+    if status not in VEHICLE_STATUSES:
+        return error_response(f"Status must be one of {sorted(VEHICLE_STATUSES)}", 400)
 
     vehicle = Vehicle(
         registration_number=registration_number,
-        type=data["type"].strip(),
-        model=data.get("model"),
-        capacity=data.get("capacity"),
+        vehicle_name=data["vehicle_name"].strip(),
+        vehicle_model=data.get("vehicle_model"),
+        vehicle_type=data["vehicle_type"].strip(),
+        maximum_load_capacity=data["maximum_load_capacity"],
+        odometer=data["odometer"],
+        acquisition_cost=data["acquisition_cost"],
         status=status,
     )
 
@@ -52,9 +80,9 @@ def list_vehicles():
     if status:
         query = query.filter_by(status=status)
 
-    vehicle_type = request.args.get("type")
+    vehicle_type = request.args.get("vehicle_type")
     if vehicle_type:
-        query = query.filter_by(type=vehicle_type)
+        query = query.filter_by(vehicle_type=vehicle_type)
 
     vehicles = query.order_by(Vehicle.created_at.desc()).all()
     return success_response(serialize_list(vehicles))
@@ -80,23 +108,38 @@ def update_vehicle(vehicle_id):
 
     if "registration_number" in data:
         registration_number = data["registration_number"].strip()
+        if not registration_number:
+            return error_response("registration_number cannot be empty", 400)
         existing = Vehicle.query.filter_by(registration_number=registration_number).first()
         if existing and existing.id != vehicle.id:
             return error_response("A vehicle with this registration number already exists", 409)
         vehicle.registration_number = registration_number
 
-    if "type" in data:
-        vehicle.type = data["type"].strip()
+    if "vehicle_name" in data:
+        vehicle.vehicle_name = data["vehicle_name"].strip()
 
-    if "model" in data:
-        vehicle.model = data["model"]
+    if "vehicle_model" in data:
+        vehicle.vehicle_model = data["vehicle_model"]
 
-    if "capacity" in data:
-        vehicle.capacity = data["capacity"]
+    if "vehicle_type" in data:
+        vehicle.vehicle_type = data["vehicle_type"].strip()
+
+    numeric_error = _validate_numeric_fields(data, NUMERIC_FIELDS)
+    if numeric_error:
+        return error_response(numeric_error, 400)
+
+    if "maximum_load_capacity" in data:
+        vehicle.maximum_load_capacity = data["maximum_load_capacity"]
+
+    if "odometer" in data:
+        vehicle.odometer = data["odometer"]
+
+    if "acquisition_cost" in data:
+        vehicle.acquisition_cost = data["acquisition_cost"]
 
     if "status" in data:
-        if data["status"] not in ALLOWED_STATUSES:
-            return error_response(f"Status must be one of {sorted(ALLOWED_STATUSES)}", 400)
+        if data["status"] not in VEHICLE_STATUSES:
+            return error_response(f"Status must be one of {sorted(VEHICLE_STATUSES)}", 400)
         vehicle.status = data["status"]
 
     db.session.commit()

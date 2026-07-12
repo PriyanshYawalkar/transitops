@@ -9,14 +9,23 @@ def utc_now():
     return datetime.now(timezone.utc)
 
 
+FLEET_MANAGER = "fleet_manager"
+DISPATCHER = "dispatcher"
+SAFETY_OFFICER = "safety_officer"
+FINANCIAL_ANALYST = "financial_analyst"
+
+ROLES = {FLEET_MANAGER, DISPATCHER, SAFETY_OFFICER, FINANCIAL_ANALYST}
+
+
 class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
+    username = db.Column(db.String(50), unique=True, nullable=False, index=True)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(20), nullable=False, default="admin")
+    role = db.Column(db.String(30), nullable=False)
     created_at = db.Column(db.DateTime, default=utc_now)
 
     def set_password(self, password):
@@ -29,10 +38,14 @@ class User(db.Model):
         return {
             "id": self.id,
             "name": self.name,
+            "username": self.username,
             "email": self.email,
             "role": self.role,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
+
+
+VEHICLE_STATUSES = {"Available", "On Trip", "In Shop", "Retired"}
 
 
 class Vehicle(db.Model):
@@ -40,10 +53,13 @@ class Vehicle(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     registration_number = db.Column(db.String(50), unique=True, nullable=False)
-    type = db.Column(db.String(50), nullable=False)
-    model = db.Column(db.String(100))
-    capacity = db.Column(db.Integer)
-    status = db.Column(db.String(20), nullable=False, default="active")
+    vehicle_name = db.Column(db.String(100), nullable=False)
+    vehicle_model = db.Column(db.String(100))
+    vehicle_type = db.Column(db.String(50), nullable=False)
+    maximum_load_capacity = db.Column(db.Float, nullable=False)
+    odometer = db.Column(db.Float, nullable=False, default=0)
+    acquisition_cost = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(20), nullable=False, default="Available")
     created_at = db.Column(db.DateTime, default=utc_now)
 
     trips = db.relationship("Trip", backref="vehicle", lazy=True)
@@ -55,12 +71,18 @@ class Vehicle(db.Model):
         return {
             "id": self.id,
             "registration_number": self.registration_number,
-            "type": self.type,
-            "model": self.model,
-            "capacity": self.capacity,
+            "vehicle_name": self.vehicle_name,
+            "vehicle_model": self.vehicle_model,
+            "vehicle_type": self.vehicle_type,
+            "maximum_load_capacity": self.maximum_load_capacity,
+            "odometer": self.odometer,
+            "acquisition_cost": self.acquisition_cost,
             "status": self.status,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
+
+
+DRIVER_STATUSES = {"Available", "On Trip", "Off Duty", "Suspended"}
 
 
 class Driver(db.Model):
@@ -69,21 +91,29 @@ class Driver(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     license_number = db.Column(db.String(50), unique=True, nullable=False)
-    phone = db.Column(db.String(20))
-    email = db.Column(db.String(120))
-    status = db.Column(db.String(20), nullable=False, default="active")
+    license_category = db.Column(db.String(20), nullable=False)
+    license_expiry_date = db.Column(db.DateTime, nullable=False)
+    contact_number = db.Column(db.String(20))
+    safety_score = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(20), nullable=False, default="Available")
     created_at = db.Column(db.DateTime, default=utc_now)
 
     trips = db.relationship("Trip", backref="driver", lazy=True)
     fuel_logs = db.relationship("FuelLog", backref="driver", lazy=True)
+
+    def is_license_expired(self, reference_time=None):
+        reference_time = reference_time or utc_now()
+        return self.license_expiry_date is not None and self.license_expiry_date < reference_time
 
     def to_dict(self):
         return {
             "id": self.id,
             "name": self.name,
             "license_number": self.license_number,
-            "phone": self.phone,
-            "email": self.email,
+            "license_category": self.license_category,
+            "license_expiry_date": self.license_expiry_date.isoformat() if self.license_expiry_date else None,
+            "contact_number": self.contact_number,
+            "safety_score": self.safety_score,
             "status": self.status,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
