@@ -10,8 +10,6 @@ from utils.validators import parse_datetime, validate_required_fields
 
 maintenance_bp = Blueprint("maintenance", __name__, url_prefix="/api/maintenance")
 
-ALLOWED_STATUSES = {"pending", "completed"}
-
 
 @maintenance_bp.route("", methods=["POST"])
 @jwt_required()
@@ -45,7 +43,7 @@ def create_maintenance():
         status="pending",
     )
 
-    vehicle.status = "maintenance"
+    vehicle.status = "In Shop"
 
     db.session.add(record)
     db.session.commit()
@@ -88,6 +86,11 @@ def update_maintenance(record_id):
 
     data = request.get_json(silent=True) or {}
 
+    if "status" in data:
+        return error_response(
+            "Maintenance status cannot be changed directly; use /complete", 400
+        )
+
     if "description" in data:
         record.description = data["description"].strip()
 
@@ -105,11 +108,6 @@ def update_maintenance(record_id):
         if error:
             return error_response(error, 400)
         record.next_service_date = next_service_date
-
-    if "status" in data:
-        if data["status"] not in ALLOWED_STATUSES:
-            return error_response(f"Status must be one of {sorted(ALLOWED_STATUSES)}", 400)
-        record.status = data["status"]
 
     db.session.commit()
     return success_response(record.to_dict(), "Maintenance record updated successfully")
@@ -140,8 +138,8 @@ def complete_maintenance(record_id):
     record.status = "completed"
 
     vehicle = Vehicle.query.get(record.vehicle_id)
-    if vehicle and vehicle.status == "maintenance":
-        vehicle.status = "active"
+    if vehicle and vehicle.status != "Retired":
+        vehicle.status = "Available"
 
     db.session.commit()
     return success_response(record.to_dict(), "Maintenance record marked as completed")

@@ -10,8 +10,6 @@ from utils.validators import parse_datetime, validate_required_fields
 
 trip_bp = Blueprint("trip", __name__, url_prefix="/api/trips")
 
-ALLOWED_STATUSES = {"scheduled", "ongoing", "completed", "cancelled"}
-
 
 def _active_trip_conflict(vehicle_id, driver_id, exclude_trip_id=None):
     query = Trip.query.filter(
@@ -35,8 +33,8 @@ def create_trip():
     vehicle = Vehicle.query.get(data["vehicle_id"])
     if not vehicle:
         return error_response("Vehicle not found", 404)
-    if vehicle.status != "active":
-        return error_response(f"Vehicle is not active (current status: {vehicle.status})", 400)
+    if vehicle.status != "Available":
+        return error_response(f"Vehicle is not available (current status: {vehicle.status})", 400)
 
     driver = Driver.query.get(data["driver_id"])
     if not driver:
@@ -108,6 +106,11 @@ def update_trip(trip_id):
 
     data = request.get_json(silent=True) or {}
 
+    if "status" in data:
+        return error_response(
+            "Trip status cannot be changed directly; use /start, /complete, or /cancel", 400
+        )
+
     if "origin" in data:
         trip.origin = data["origin"].strip()
 
@@ -122,11 +125,6 @@ def update_trip(trip_id):
         if error:
             return error_response(error, 400)
         trip.scheduled_start = scheduled_start
-
-    if "status" in data:
-        if data["status"] not in ALLOWED_STATUSES:
-            return error_response(f"Status must be one of {sorted(ALLOWED_STATUSES)}", 400)
-        trip.status = data["status"]
 
     db.session.commit()
     return success_response(trip.to_dict(), "Trip updated successfully")
@@ -160,6 +158,7 @@ def start_trip(trip_id):
 
     trip.status = "ongoing"
     trip.start_time = datetime.now(timezone.utc)
+    trip.vehicle.status = "On Trip"
     db.session.commit()
 
     return success_response(trip.to_dict(), "Trip started")
@@ -181,6 +180,7 @@ def complete_trip(trip_id):
     trip.end_time = datetime.now(timezone.utc)
     if data.get("distance_km") is not None:
         trip.distance_km = data["distance_km"]
+    trip.vehicle.status = "Available"
 
     db.session.commit()
     return success_response(trip.to_dict(), "Trip completed")
@@ -197,5 +197,6 @@ def cancel_trip(trip_id):
         return error_response(f"Cannot cancel a {trip.status} trip", 400)
 
     trip.status = "cancelled"
+    trip.vehicle.status = "Available"
     db.session.commit()
     return success_response(trip.to_dict(), "Trip cancelled")
